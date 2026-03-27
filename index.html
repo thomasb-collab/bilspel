@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tompa's Spel</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ac: #00e5ff;
+  --ac2: #ff6b35;
+  --bg: #07090c;
+  --card: #0d1117;
+  --border: rgba(0,229,255,0.15);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+}
+body {
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(0,80,120,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(0,60,40,0.15) 0%, transparent 60%);
+  min-height: 100vh;
+  padding: 40px 20px 60px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.site-chip {
+  display: inline-block;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--ac);
+  border: 1px solid rgba(0,229,255,0.25);
+  border-radius: 100px;
+  padding: 4px 18px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(28px, 7vw, 52px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+h1 span { color: var(--ac); }
+
+.tagline {
+  font-size: 14px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,229,255,0.45);
+  box-shadow: 0 8px 40px rgba(0,229,255,0.12);
+}
+
+.card-thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 52px;
+  background: linear-gradient(135deg, #0d1f2d 0%, #0a1a10 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.4) 100%);
+}
+
+/* Unique thumb colors per card */
+.thumb-race   { background: linear-gradient(135deg, #0a1520 0%, #0d2510 100%); }
+.thumb-blue   { background: linear-gradient(135deg, #0a1030 0%, #101828 100%); }
+.thumb-red    { background: linear-gradient(135deg, #200a0a 0%, #1a100a 100%); }
+.thumb-green  { background: linear-gradient(135deg, #0a2010 0%, #0d1820 100%); }
+.thumb-purple { background: linear-gradient(135deg, #180a28 0%, #0a0d20 100%); }
+
+.card-body {
+  padding: 16px 18px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-tag {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--ac);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+
+.card-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+
+.card-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.6;
+  flex: 1;
+}
+
+.card-footer {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.play-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ac);
+  color: #000;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 7px 16px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  transition: background 0.15s;
+}
+
+.card:hover .play-btn { background: #33eeff; }
+
+.card-size {
+  font-size: 10px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 1px;
+}
+
+/* Section heading */
+.section-label {
+  max-width: 960px;
+  margin: 0 auto 14px;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.25);
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0 2px;
+}
+
+footer {
+  text-align: center;
+  margin-top: 60px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.12);
+  letter-spacing: 2px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="site-chip">Dalarna Digital</div>
+  <h1>TOMPA'S<br><span>ARKAD</span></h1>
+  <p class="tagline">Välj ett spel och kör igång</p>
+</header>
+
+<div class="section-label">Spel</div>
+<div class="grid">
+
+  <!-- ── LÄGG TILL DINA SPEL HÄR ── -->
+  <!-- Kopiera ett card-block och byt href, titel, beskrivning och emoji -->
+
+  <a class="card" href="dalarna_race_v6.html">
+    <div class="card-thumb thumb-race">🚗</div>
+    <div class="card-body">
+      <div class="card-tag">Racingspel</div>
+      <div class="card-title">DALARNA RACE</div>
+      <div class="card-desc">Kör chefen från Grängesberg till Högskolan Dalarna. Undvik älgar, björnar och unicorns på vägen!</div>
+      <div class="card-footer">
+        <span class="play-btn">▶ SPELA</span>
+        <span class="card-size">HTML</span>
+      </div>
+    </div>
+  </a>
+
+  <!-- Exempel på extra kort — byt href och text när du har fler filer:
+
+  <a class="card" href="ditt_spel.html">
+    <div class="card-thumb thumb-blue">🎮</div>
+    <div class="card-body">
+      <div class="card-tag">Actionspel</div>
+      <div class="card-title">DITT SPEL</div>
+      <div class="card-desc">Beskrivning av spelet.</div>
+      <div class="card-footer">
+        <span class="play-btn">▶ SPELA</span>
+        <span class="card-size">HTML</span>
+      </div>
+    </div>
+  </a>
+
+  -->
+
+</div>
+
+<footer>TOMPA'S ARKAD &nbsp;·&nbsp; DALARNA &nbsp;·&nbsp; 2025</footer>
+
+</body>
+</html>
