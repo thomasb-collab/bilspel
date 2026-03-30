@@ -297,6 +297,31 @@ body{overflow-y:auto;}
   .subj-card{min-width:120px;padding:16px 14px;}
   .subj-title{font-size:28px;}
 }
+
+.subj-card.clk{border-color:#67e8f9;}.subj-card.clk:hover{box-shadow:0 10px 36px rgba(80,200,240,.45);}
+
+/* Clock question area */
+.clock-card{background:rgba(255,255,255,.76);border:3px solid rgba(255,255,255,.9);
+  backdrop-filter:blur(10px);border-radius:28px;padding:18px 16px 12px;
+  text-align:center;width:100%;box-shadow:0 8px 30px rgba(0,0,0,.12);display:none;}
+.clock-card.dark-card{background:rgba(20,0,40,.7);border-color:rgba(192,132,252,.4);}
+.clock-card.visible{display:block;}
+.clock-hint{color:#5a8a30;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:2.5px;margin-bottom:10px;}
+.dark-card .clock-hint{color:#a855f7;}
+.clock-displays{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
+#clockCanvas{border-radius:50%;box-shadow:0 4px 16px rgba(0,0,0,.15);}
+.digital-display{font-family:'Fredoka One',cursive;font-size:42px;color:#2e5e0e;
+  background:rgba(0,0,0,.06);border-radius:14px;padding:10px 20px;
+  letter-spacing:3px;display:none;}
+.digital-display.dark-dig{color:#e879f9;background:rgba(255,255,255,.06);}
+.digital-display.show{display:block;}
+
+@media(max-width:600px){
+  .clock-displays{gap:12px;}
+  #clockCanvas{width:140px!important;height:140px!important;}
+  .digital-display{font-size:32px;padding:8px 14px;}
+}
 </style>
 </head>
 <body>
@@ -340,6 +365,11 @@ body{overflow-y:auto;}
       <div class="s-ico">🔢</div>
       <div class="s-nm">Matematik</div>
       <div class="s-ds">Öva matte-uppgifter</div>
+    </div>
+    <div class="subj-card clk" onclick="pickSubject('clk')">
+      <div class="s-ico">🕐</div>
+      <div class="s-nm">Klockan</div>
+      <div class="s-ds">Analog &amp; digital tid</div>
     </div>
   </div>
 </div>
@@ -396,6 +426,15 @@ body{overflow-y:auto;}
         <div class="eng-word" id="engWord">CAT</div>
       </div>
       <div class="opts" id="opts"></div>
+    </div>
+
+    <!-- CLOCK CARD (shown instead of word-card for clock subject) -->
+    <div class="clock-card" id="clockCard">
+      <div class="clock-hint" id="clockHint">Vad är klockan?</div>
+      <div class="clock-displays">
+        <canvas id="clockCanvas" width="170" height="170"></canvas>
+        <div class="digital-display" id="digitalDisplay">12:00</div>
+      </div>
     </div>
 
     <!-- BATTLE SCENE -->
@@ -677,6 +716,137 @@ function genMathQ(lvl){
   };
 }
 
+// ── CLOCK BANKS (svårighetsgrader 1-6) ──────────────────────────────────────
+const CLOCK_BANKS = {
+  1:{ badge:"🕐 Klockan Nivå 1", dark:false },  // hela timmar
+  2:{ badge:"🕧 Klockan Nivå 2", dark:false },  // halv + hel
+  3:{ badge:"🕑 Klockan Nivå 3", dark:false },  // kvart i/över
+  4:{ badge:"🕒 Klockan Nivå 4", dark:false },  // fem-minutshopp
+  5:{ badge:"🕓 Klockan Nivå 5", dark:false },  // alla minuter
+  6:{ badge:"🕔 Klockan Nivå 6", dark:true  },  // blandad analog+digital
+};
+
+let clockH=12, clockM=0;    // current clock time
+let showDigital=false;       // true = show digital, ask for analog-style answer text
+let clockAnimRaf=null;
+
+function genClockQ(lvl){
+  // Generate h/m and return {h, m, sv:"HH:MM", w:[wrong1,wrong2], showDig}
+  let h, m;
+  if(lvl===1){
+    h=rnd(1,12); m=0;
+  } else if(lvl===2){
+    h=rnd(1,12); m=[0,30][rnd(0,1)];
+  } else if(lvl===3){
+    h=rnd(1,12); m=[0,15,30,45][rnd(0,3)];
+  } else if(lvl===4){
+    h=rnd(1,12); m=[0,5,10,15,20,25,30,35,40,45,50,55][rnd(0,11)];
+  } else {
+    h=rnd(1,12); m=rnd(0,59);
+  }
+
+  // Niveau 6: randomly show digital, ask what analog would look like (text answer)
+  const showDig = (lvl===6 && Math.random()<0.45);
+
+  const pad=n=>String(n).padStart(2,'0');
+  const correctStr = pad(h)+':'+pad(m);
+
+  // Generate 2 plausible wrong times
+  const wrongs=new Set();
+  while(wrongs.size<2){
+    let wh=h, wm=m;
+    if(Math.random()<0.5){
+      wh=((h-1+rnd(1,3))%12)||12;
+    } else {
+      let delta=[5,10,15,30][rnd(0,3)] * (Math.random()<0.5?1:-1);
+      wm=((m+delta)%60+60)%60;
+      if(wm===m) wm=(wm+5)%60;
+    }
+    const ws=pad(wh)+':'+pad(wm);
+    if(ws!==correctStr) wrongs.add(ws);
+  }
+
+  return { h, m, sv:correctStr, w:[...wrongs], showDig };
+}
+
+// ── DRAW ANALOG CLOCK ────────────────────────────────────────────────────────
+function drawClock(canvas, h, m, dark){
+  const c=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const cx=W/2, cy=H/2, r=W/2-4;
+  c.clearRect(0,0,W,H);
+
+  // Face
+  c.fillStyle=dark?'#1a0a30':'#fff';
+  c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fill();
+  c.strokeStyle=dark?'#c084fc':'#2e5e0e';
+  c.lineWidth=3;c.stroke();
+
+  // Inner ring decoration
+  c.strokeStyle=dark?'rgba(192,132,252,.2)':'rgba(46,94,14,.1)';
+  c.lineWidth=1.5;
+  c.beginPath();c.arc(cx,cy,r-10,0,Math.PI*2);c.stroke();
+
+  // Hour ticks
+  for(let i=0;i<12;i++){
+    const a=i*Math.PI/6 - Math.PI/2;
+    const big = i%3===0;
+    const r1=r-(big?14:8), r2=r-3;
+    c.strokeStyle=dark?'#d8b4fe':'#2e5e0e';
+    c.lineWidth=big?3:1.5;
+    c.beginPath();
+    c.moveTo(cx+Math.cos(a)*r1, cy+Math.sin(a)*r1);
+    c.lineTo(cx+Math.cos(a)*r2, cy+Math.sin(a)*r2);
+    c.stroke();
+  }
+
+  // Minute ticks (only level 4+)
+  for(let i=0;i<60;i++){
+    if(i%5===0) continue;
+    const a=i*Math.PI/30 - Math.PI/2;
+    c.strokeStyle=dark?'rgba(216,180,254,.35)':'rgba(46,94,14,.25)';
+    c.lineWidth=1;
+    c.beginPath();
+    c.moveTo(cx+Math.cos(a)*(r-5), cy+Math.sin(a)*(r-5));
+    c.lineTo(cx+Math.cos(a)*(r-3), cy+Math.sin(a)*(r-3));
+    c.stroke();
+  }
+
+  // Hour numbers
+  c.fillStyle=dark?'#e879f9':'#1a4000';
+  c.font=`bold ${Math.round(r*0.22)}px Fredoka One, cursive`;
+  c.textAlign='center'; c.textBaseline='middle';
+  for(let i=1;i<=12;i++){
+    const a=i*Math.PI/6 - Math.PI/2;
+    const nr=r-26;
+    c.fillText(i, cx+Math.cos(a)*nr, cy+Math.sin(a)*nr);
+  }
+
+  // Minute hand
+  const mAngle = (m/60)*Math.PI*2 - Math.PI/2;
+  c.strokeStyle=dark?'#c084fc':'#1a4000';
+  c.lineWidth=3; c.lineCap='round';
+  c.beginPath();
+  c.moveTo(cx - Math.cos(mAngle)*12, cy - Math.sin(mAngle)*12);
+  c.lineTo(cx + Math.cos(mAngle)*(r*0.78), cy + Math.sin(mAngle)*(r*0.78));
+  c.stroke();
+
+  // Hour hand
+  const hAngle = ((h%12)/12 + m/720)*Math.PI*2 - Math.PI/2;
+  c.strokeStyle=dark?'#e879f9':'#2e5e0e';
+  c.lineWidth=5;
+  c.beginPath();
+  c.moveTo(cx - Math.cos(hAngle)*10, cy - Math.sin(hAngle)*10);
+  c.lineTo(cx + Math.cos(hAngle)*(r*0.55), cy + Math.sin(hAngle)*(r*0.55));
+  c.stroke();
+
+  // Center dot
+  c.fillStyle=dark?'#e879f9':'#1a4000';
+  c.beginPath();c.arc(cx,cy,5,0,Math.PI*2);c.fill();
+  c.fillStyle='white';
+  c.beginPath();c.arc(cx,cy,2,0,Math.PI*2);c.fill();
+}
+
 const GOAL=20;
 let lvl=1,score=0,locked=false,soundOn=true,usedIdx=[];
 let audioCtx=null;
@@ -715,7 +885,7 @@ function sndClick(){tone(600,'sine',.06,.14);}
 function sndFaint(){tone(300,'sawtooth',.08,.25);tone(200,'sawtooth',.15,.22,.07);tone(120,'sawtooth',.25,.18,.18);}
 
 const shuffle=a=>[...a].sort(()=>Math.random()-.5);
-const isDark=()=>(subject==='eng'?BANKS[lvl]:MATH_BANKS[lvl]).dark;
+const isDark=()=>(subject==='eng'?BANKS[lvl]:subject==='mat'?MATH_BANKS[lvl]:CLOCK_BANKS[lvl]).dark;
 
 // ── THEME ──
 function applyTheme(){
@@ -918,17 +1088,38 @@ const MAT_DESCS = [
   'Multiplikation<br>&amp; division','Area, ekvationer<br>&amp; stora tal',
   'Procent, negativa<br>tal &amp; decimal','Algebra, potenser<br>&amp; volym'
 ];
+const CLK_DESCS = [
+  'Hela timmar','Halv- och<br>heltimmar','Kvart i &amp;<br>kvart över',
+  'Fem-minutshopp','Alla minuter<br>0–59','Analog+digital<br>blandad'
+];
 
 function pickSubject(subj){
   sndClick();
   subject = subj;
-  // Update level screen labels
-  document.getElementById('lvlTitle').textContent = subj==='eng' ? '🇬🇧 Engelska' : '🔢 Matematik';
-  document.getElementById('lvlSub').textContent   = 'Välj din årskurs!';
-  // Update card descriptions
-  const descs = subj==='eng' ? ENG_DESCS : MAT_DESCS;
+  const titles = {eng:'🇬🇧 Engelska', mat:'🔢 Matematik', clk:'🕐 Klockan'};
+  document.getElementById('lvlTitle').textContent = titles[subj];
+  document.getElementById('lvlSub').textContent   = subj==='clk' ? 'Välj svårighetsgrad!' : 'Välj din årskurs!';
+  const descs = subj==='eng' ? ENG_DESCS : subj==='mat' ? MAT_DESCS : CLK_DESCS;
   for(let i=1;i<=6;i++) document.getElementById('ds'+i).innerHTML = descs[i-1];
-  // Show AI button only for english
+  // Update level card icons/names for clock
+  const icos = subj==='clk'
+    ? ['🕐','🕧','🕑','🕒','🕓','🕔']
+    : ['🌱','🐛','🦋','🦊','🦅','⚡'];
+  const nms = subj==='clk'
+    ? ['Nivå 1','Nivå 2','Nivå 3','Nivå 4','Nivå 5','Nivå 6']
+    : ['Åk 1','Åk 2','Åk 3','Åk 4','Åk 5','Åk 6'];
+  document.querySelectorAll('#lvlCards .lc').forEach((c,i)=>{
+    c.querySelector('.ico').textContent = icos[i];
+    c.querySelector('.nm').textContent  = nms[i];
+    c.querySelector('.nm').style.color  = '';
+    c.querySelector('.ds').style.color  = '';
+  });
+  // Last card dark style for clock level 6 and eng level 6
+  const last = document.querySelector('#lvlCards .lc:last-child');
+  if(subj==='eng'||subj==='clk'){
+    last.querySelector('.nm').style.color='#e879f9';
+    last.querySelector('.ds').style.color='#d8b4fe';
+  }
   document.getElementById('refreshBtn').style.display = subj==='eng' ? 'flex' : 'none';
   document.getElementById('subjScreen').style.display='none';
   document.getElementById('lvlScreen').style.display='flex';
@@ -956,8 +1147,17 @@ function startLevel(n){
   setHp('enemy',enemyHp,enemy.maxHp);
   setHp('player',playerHp,PLAYER.maxHp);
 
-  const bank = subject==='eng' ? BANKS[n] : MATH_BANKS[n];
+  const bank = subject==='eng' ? BANKS[n] : subject==='mat' ? MATH_BANKS[n] : CLOCK_BANKS[n];
   document.getElementById('lvBadge').textContent=bank.badge;
+
+  // Show/hide word-card vs clock-card
+  const isClk = subject==='clk';
+  document.getElementById('wordCard').style.display   = isClk ? 'none' : '';
+  document.getElementById('clockCard').classList.toggle('visible', isClk);
+  document.getElementById('clockCard').classList.toggle('dark-card', isDark());
+  if(isClk){
+    document.getElementById('clockHint').textContent='Vad är klockan?';
+  }
   document.getElementById('lvlScreen').style.display='none';
   document.getElementById('gameWrap').style.display='flex';
   document.getElementById('winScr').style.display='none';
@@ -965,8 +1165,10 @@ function startLevel(n){
   applyTheme();
   document.querySelectorAll('.opt').forEach(o=>o.classList.toggle('dark-opt',isDark()));
   setMsg('Välj rätt svar för att attackera!');
-  document.getElementById('wordHint').textContent = subject==='eng' ? 'Vad betyder detta ord på svenska?' : 'Räkna ut!';
-  document.getElementById('engWord').className = subject==='eng' ? 'eng-word' : 'eng-word math-q';
+  if(!isClk){
+    document.getElementById('wordHint').textContent = subject==='eng' ? 'Vad betyder detta ord på svenska?' : 'Räkna ut!';
+    document.getElementById('engWord').className = subject==='eng' ? 'eng-word' : 'eng-word math-q';
+  }
   setTimeout(startBattle,60);
   nextQ();
 }
@@ -987,10 +1189,31 @@ function nextQ(){
     usedIdx.push(i);
     word=bank[i];
     document.getElementById('engWord').textContent=word.en;
-  } else {
-    // Generate fresh math question each time
+  } else if(subject==='mat'){
     word=genMathQ(lvl);
     document.getElementById('engWord').textContent=word.q;
+  } else {
+    // CLOCK
+    const cq=genClockQ(lvl);
+    clockH=cq.h; clockM=cq.m;
+    word={ sv:cq.sv, w:cq.w, showDig:cq.showDig };
+    window._clockQ=cq;
+    const dark=isDark();
+    const canvas=document.getElementById('clockCanvas');
+    // Size canvas to CSS size
+    canvas.width=canvas.offsetWidth||170;
+    canvas.height=canvas.offsetHeight||170;
+    // If showDig: show digital time, ask for verbal answer
+    // Level 6: show BOTH analog and digital so they must match both
+    document.getElementById('clockHint').textContent='Vad är klockan?';
+    if(cq.showDig){
+      // Show digital display alongside analog
+      document.getElementById('digitalDisplay').textContent=cq.sv;
+      document.getElementById('digitalDisplay').className='digital-display show'+(dark?' dark-dig':'');
+    } else {
+      document.getElementById('digitalDisplay').className='digital-display';
+    }
+    drawClock(canvas, cq.h, cq.m, dark);
   }
   window._w=word;
 
@@ -1068,13 +1291,13 @@ function showWin(lost=false){
     document.getElementById('winIco').textContent=isDark()?'⚡':'🎉';
     document.getElementById('winScr').querySelector('.win-ttl').textContent='SEGER!';
     document.getElementById('winSub').textContent=
-      lvl===6?`Åk 6 klar! Du är en ${subject==='mat'?'matteguru':'ordmästare'}! 👑`:
-      `Åk ${lvl} klar! Redo för nästa? 🚀`;
+      lvl===6?`${subject==='clk'?'Nivå 6':'Åk 6'} klar! Du är en ${subject==='mat'?'matteguru':subject==='clk'?'klockexpert':'ordmästare'}! 👑`:
+      `${subject==='clk'?'Nivå':'Åk'} ${lvl} klar! Redo för nästa? 🚀`;
   }
   const nb=document.getElementById('btnNext');
   nb.style.display=(!lost&&lvl<6)?'block':'none';
   nb.className='win-btn btn-next'+(lvl===5?' jedi-next':'');
-  nb.textContent=lvl===5?'Åk 6 ⚡':'Nästa åk ➡️';
+  nb.textContent=lvl===5?(subject==='clk'?'Nivå 6 ⚡':'Åk 6 ⚡'):(subject==='clk'?'Nästa nivå ➡️':'Nästa åk ➡️');
   document.getElementById('winScr').style.display='flex';
   if(!lost){
     const cols=isDark()?['#c084fc','#818cf8','#38bdf8','#e879f9']:['#ffd700','#ff6b6b','#4ecdc4','#45b7d1','#a8e06d'];
