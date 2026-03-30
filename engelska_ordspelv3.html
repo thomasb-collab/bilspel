@@ -64,11 +64,13 @@ body{font-family:'Nunito',sans-serif;min-height:100vh;display:flex;align-items:f
 .lc{background:rgba(255,255,255,.13);border:3px solid rgba(255,255,255,.3);border-radius:24px;padding:20px 22px;cursor:pointer;transition:all .2s;text-align:center;min-width:140px;backdrop-filter:blur(8px);color:#fff;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
 .lc:hover{transform:translateY(-8px) scale(1.05);background:rgba(255,255,255,.26);}
 .lc .ico{font-size:40px;margin-bottom:7px;}.lc .nm{font-family:'Fredoka One',cursive;font-size:21px;margin-bottom:3px;}.lc .ds{font-size:11px;opacity:.8;font-weight:600;line-height:1.5;}
-.lc.l1{border-color:#8be08b;}.lc.l1:hover{box-shadow:0 8px 28px rgba(100,220,100,.4);}
-.lc.l2{border-color:#ffe566;}.lc.l2:hover{box-shadow:0 8px 28px rgba(255,220,50,.4);}
-.lc.l3{border-color:#ff8c66;}.lc.l3:hover{box-shadow:0 8px 28px rgba(255,120,60,.4);}
-.lc.l4{border-color:#c084fc;background:rgba(80,0,120,.25);}.lc.l4:hover{box-shadow:0 8px 28px rgba(180,80,255,.5);background:rgba(100,0,160,.4);}
-.lc.l4 .nm{color:#e879f9;}
+.lc.l1{border-color:#86efac;}.lc.l1:hover{box-shadow:0 8px 28px rgba(100,220,100,.4);}
+.lc.l2{border-color:#6ee7b7;}.lc.l2:hover{box-shadow:0 8px 28px rgba(50,200,150,.4);}
+.lc.l3{border-color:#ffe566;}.lc.l3:hover{box-shadow:0 8px 28px rgba(255,220,50,.4);}
+.lc.l4{border-color:#fb923c;}.lc.l4:hover{box-shadow:0 8px 28px rgba(255,140,60,.4);}
+.lc.l5{border-color:#f87171;}.lc.l5:hover{box-shadow:0 8px 28px rgba(255,80,80,.4);}
+.lc.l6{border-color:#c084fc;background:rgba(60,0,100,.22);}.lc.l6:hover{box-shadow:0 8px 28px rgba(180,80,255,.5);background:rgba(90,0,150,.38);}
+.lc.l6 .nm{color:#e879f9;}
 
 /* GAME */
 .game-wrap{position:relative;z-index:10;width:100%;display:flex;justify-content:center;min-height:100vh;padding-top:env(safe-area-inset-top);}
@@ -197,8 +199,8 @@ body{overflow-y:auto;}
   .ls-title{font-size:32px;margin-bottom:2px;}
   .ls-sub{font-size:13px;margin-bottom:18px;}
   .ls-cards{gap:10px;padding:0 10px;}
-  .lc{min-width:calc(50% - 10px);padding:14px 10px;border-radius:18px;}
-  .lc .ico{font-size:32px;margin-bottom:5px;}
+  .lc{min-width:calc(33% - 10px);padding:12px 8px;border-radius:16px;}
+  .lc .ico{font-size:28px;margin-bottom:4px;}
   .lc .nm{font-size:17px;}
   .lc .ds{font-size:10px;}
   .refresh-btn{font-size:15px;padding:9px 20px;margin-top:16px;}
@@ -259,7 +261,7 @@ body{overflow-y:auto;}
   .eng-word{font-size:36px;}
   .opt{font-size:16px;padding:13px 12px;}
   .ls-title{font-size:26px;}
-  .lc{min-width:calc(50% - 8px);padding:12px 8px;}
+  .lc{min-width:calc(50% - 8px);padding:10px 6px;font-size:11px;}
   .battle-scene{height:140px;}
   #enemyCanvas{width:76px;height:76px;bottom:40px;}
   #playerCanvas{width:90px;height:90px;bottom:12px;}
@@ -298,10 +300,12 @@ body{overflow-y:auto;}
   <div class="ls-title">🌳 Ordskogen 🌳</div>
   <div class="ls-sub">Välj en nivå och börja öva engelska!</div>
   <div class="ls-cards">
-    <div class="lc l1" onclick="startLevel(1)"><div class="ico">🐣</div><div class="nm">Nivå 1</div><div class="ds">Lätta ord<br>Djur &amp; natur</div></div>
-    <div class="lc l2" onclick="startLevel(2)"><div class="ico">🦊</div><div class="nm">Nivå 2</div><div class="ds">Medel<br>Hem &amp; föremål</div></div>
-    <div class="lc l3" onclick="startLevel(3)"><div class="ico">🦅</div><div class="nm">Nivå 3</div><div class="ds">Svåra ord<br>Känslor &amp; verb</div></div>
-    <div class="lc l4" onclick="startLevel(4)"><div class="ico">⚡</div><div class="nm" style="color:#e879f9">SUPER-<br>SVÅR</div><div class="ds" style="color:#d8b4fe">Åk 3-nivå<br>Kluriga ord</div></div>
+    <div class="lc l1" onclick="startLevel(1)"><div class="ico">🌱</div><div class="nm">Åk 1</div><div class="ds">Enkla ord<br>Djur &amp; saker</div></div>
+    <div class="lc l2" onclick="startLevel(2)"><div class="ico">🐛</div><div class="nm">Åk 2</div><div class="ds">Vardagsord<br>Hem &amp; mat</div></div>
+    <div class="lc l3" onclick="startLevel(3)"><div class="ico">🦋</div><div class="nm">Åk 3</div><div class="ds">Fler ord<br>Kropp &amp; natur</div></div>
+    <div class="lc l4" onclick="startLevel(4)"><div class="ico">🦊</div><div class="nm">Åk 4</div><div class="ds">Adjektiv<br>&amp; verb</div></div>
+    <div class="lc l5" onclick="startLevel(5)"><div class="ico">🦅</div><div class="nm">Åk 5</div><div class="ds">Svårare ord<br>Egenskaper</div></div>
+    <div class="lc l6" onclick="startLevel(6)"><div class="ico">⚡</div><div class="nm" style="color:#e879f9">Åk 6</div><div class="ds" style="color:#d8b4fe">Avancerat<br>Fullständiga meningar</div></div>
   </div>
   <button class="refresh-btn" id="refreshBtn" onclick="refreshAllWords()">
     <span class="spin" id="refreshSpin">✨</span> Generera nya ord med AI!
@@ -397,53 +401,77 @@ body{overflow-y:auto;}
 })();
 
 const BANKS={
-  1:{badge:"🐣 Nivå 1",dark:false,words:[
+  1:{badge:"🌱 Åk 1",dark:false,words:[
     {en:"CAT",sv:"katt",w:["hund","fågel"]},{en:"DOG",sv:"hund",w:["katt","häst"]},
-    {en:"FISH",sv:"fisk",w:["fågel","ko"]},{en:"BIRD",sv:"fågel",w:["katt","råtta"]},
-    {en:"SUN",sv:"sol",w:["måne","stjärna"]},{en:"TREE",sv:"träd",w:["blomma","gräs"]},
-    {en:"FLOWER",sv:"blomma",w:["träd","gräs"]},{en:"RAIN",sv:"regn",w:["snö","vind"]},
-    {en:"SNOW",sv:"snö",w:["is","regn"]},{en:"FROG",sv:"groda",w:["orm","mus"]},
-    {en:"HORSE",sv:"häst",w:["ko","get"]},{en:"BEE",sv:"bi",w:["myra","fluga"]},
-    {en:"RABBIT",sv:"kanin",w:["ekorre","igelkott"]},{en:"APPLE",sv:"äpple",w:["päron","banan"]},
-    {en:"WATER",sv:"vatten",w:["mjölk","juice"]},{en:"STAR",sv:"stjärna",w:["sol","måne"]},
-    {en:"MOON",sv:"måne",w:["sol","stjärna"]},{en:"MILK",sv:"mjölk",w:["vatten","saft"]},
-    {en:"FOREST",sv:"skog",w:["äng","sjö"]},{en:"BUTTERFLY",sv:"fjäril",w:["bi","myra"]}
+    {en:"COW",sv:"ko",w:["häst","gris"]},{en:"PIG",sv:"gris",w:["ko","get"]},
+    {en:"FISH",sv:"fisk",w:["fågel","orm"]},{en:"BIRD",sv:"fågel",w:["fisk","katt"]},
+    {en:"SUN",sv:"sol",w:["måne","stjärna"]},{en:"MOON",sv:"måne",w:["sol","stjärna"]},
+    {en:"TREE",sv:"träd",w:["blomma","gräs"]},{en:"FLOWER",sv:"blomma",w:["träd","gräs"]},
+    {en:"BALL",sv:"boll",w:["leksak","bok"]},{en:"CAR",sv:"bil",w:["buss","tåg"]},
+    {en:"HOUSE",sv:"hus",w:["bil","träd"]},{en:"APPLE",sv:"äpple",w:["päron","banan"]},
+    {en:"MILK",sv:"mjölk",w:["vatten","juice"]},{en:"WATER",sv:"vatten",w:["mjölk","saft"]},
+    {en:"RED",sv:"röd",w:["blå","grön"]},{en:"BLUE",sv:"blå",w:["röd","gul"]},
+    {en:"ONE",sv:"ett/en",w:["två","tre"]},{en:"TWO",sv:"två",w:["ett","tre"]}
   ]},
-  2:{badge:"🦊 Nivå 2",dark:false,words:[
-    {en:"HOUSE",sv:"hus",w:["bil","träd"]},{en:"DOOR",sv:"dörr",w:["fönster","tak"]},
+  2:{badge:"🐛 Åk 2",dark:false,words:[
+    {en:"BREAD",sv:"bröd",w:["smör","ost"]},{en:"EGG",sv:"ägg",w:["mjölk","smör"]},
     {en:"CHAIR",sv:"stol",w:["bord","säng"]},{en:"TABLE",sv:"bord",w:["stol","hylla"]},
-    {en:"BREAD",sv:"bröd",w:["smör","ost"]},{en:"SHOE",sv:"sko",w:["mössa","jacka"]},
-    {en:"HAT",sv:"hatt",w:["mössa","keps"]},{en:"HAND",sv:"hand",w:["fot","arm"]},
-    {en:"EYE",sv:"öga",w:["öra","näsa"]},{en:"BOOK",sv:"bok",w:["penna","linjal"]},
-    {en:"BED",sv:"säng",w:["soffa","stol"]},{en:"KEY",sv:"nyckel",w:["lås","dörr"]},
-    {en:"CAKE",sv:"tårta",w:["kaka","glass"]},{en:"CAR",sv:"bil",w:["buss","tåg"]},
-    {en:"WINDOW",sv:"fönster",w:["dörr","tak"]},{en:"CLOCK",sv:"klocka",w:["lampa","spegel"]},
-    {en:"KNIFE",sv:"kniv",w:["gaffel","sked"]},{en:"GLASS",sv:"glas",w:["mugg","skål"]},
-    {en:"LAMP",sv:"lampa",w:["stol","bord"]},{en:"BALL",sv:"boll",w:["bok","stol"]}
+    {en:"DOOR",sv:"dörr",w:["fönster","tak"]},{en:"WINDOW",sv:"fönster",w:["dörr","vägg"]},
+    {en:"SHOE",sv:"sko",w:["strumpa","jacka"]},{en:"HAT",sv:"hatt",w:["mössa","keps"]},
+    {en:"BOOK",sv:"bok",w:["penna","linjal"]},{en:"PEN",sv:"penna",w:["bok","linjal"]},
+    {en:"BED",sv:"säng",w:["soffa","stol"]},{en:"LAMP",sv:"lampa",w:["stol","bord"]},
+    {en:"RAIN",sv:"regn",w:["snö","vind"]},{en:"SNOW",sv:"snö",w:["is","regn"]},
+    {en:"FROG",sv:"groda",w:["orm","mus"]},{en:"RABBIT",sv:"kanin",w:["ekorre","igelkott"]},
+    {en:"GREEN",sv:"grön",w:["röd","gul"]},{en:"YELLOW",sv:"gul",w:["blå","grön"]},
+    {en:"SMALL",sv:"liten",w:["stor","smal"]},{en:"BIG",sv:"stor",w:["liten","tung"]}
   ]},
-  3:{badge:"🦅 Nivå 3",dark:false,words:[
-    {en:"HUNGRY",sv:"hungrig",w:["trött","glad"]},{en:"THIRSTY",sv:"törstig",w:["trött","arg"]},
-    {en:"BRAVE",sv:"modig",w:["rädd","snäll"]},{en:"CLEVER",sv:"smart",w:["dum","lat"]},
-    {en:"FUNNY",sv:"rolig",w:["tråkig","dum"]},{en:"ANGRY",sv:"arg",w:["glad","ledsen"]},
-    {en:"SCARED",sv:"rädd",w:["modig","glad"]},{en:"TIRED",sv:"trött",w:["pigg","arg"]},
-    {en:"JUMP",sv:"hoppa",w:["springa","simma"]},{en:"RUN",sv:"springa",w:["hoppa","gå"]},
-    {en:"SWIM",sv:"simma",w:["flyga","springa"]},{en:"FLY",sv:"flyga",w:["simma","hoppa"]},
-    {en:"CLIMB",sv:"klättra",w:["hoppa","falla"]},{en:"WHISPER",sv:"viska",w:["skrika","sjunga"]},
-    {en:"GIGGLE",sv:"fnissa",w:["gråta","skrika"]},{en:"SHADOW",sv:"skugga",w:["ljus","reflex"]},
-    {en:"THUNDER",sv:"åska",w:["storm","blixt"]},{en:"DREAM",sv:"dröm",w:["tanke","minne"]},
-    {en:"MAGIC",sv:"magi",w:["trick","kraft"]},{en:"SHIVER",sv:"darra",w:["hoppa","skratta"]}
+  3:{badge:"🦋 Åk 3",dark:false,words:[
+    {en:"HAND",sv:"hand",w:["fot","arm"]},{en:"FOOT",sv:"fot",w:["hand","ben"]},
+    {en:"EYE",sv:"öga",w:["öra","näsa"]},{en:"EAR",sv:"öra",w:["öga","mun"]},
+    {en:"NOSE",sv:"näsa",w:["mun","öra"]},{en:"MOUTH",sv:"mun",w:["näsa","tand"]},
+    {en:"HAIR",sv:"hår",w:["hand","axel"]},{en:"BACK",sv:"rygg",w:["mage","arm"]},
+    {en:"FOREST",sv:"skog",w:["äng","sjö"]},{en:"RIVER",sv:"flod",w:["sjö","hav"]},
+    {en:"MOUNTAIN",sv:"berg",w:["dal","skog"]},{en:"CLOUD",sv:"moln",w:["sol","regn"]},
+    {en:"BUTTERFLY",sv:"fjäril",w:["bi","myra"]},{en:"BEE",sv:"bi",w:["myra","fluga"]},
+    {en:"HORSE",sv:"häst",w:["ko","åsna"]},{en:"STAR",sv:"stjärna",w:["sol","måne"]},
+    {en:"CLOCK",sv:"klocka",w:["lampa","spegel"]},{en:"KEY",sv:"nyckel",w:["lås","dörr"]},
+    {en:"CAKE",sv:"tårta",w:["kaka","glass"]},{en:"GLASS",sv:"glas",w:["mugg","tallrik"]}
   ]},
-  4:{badge:"⚡ SUPERSVÅR",dark:true,words:[
+  4:{badge:"🦊 Åk 4",dark:false,words:[
     {en:"HAPPY",sv:"glad",w:["ledsen","arg"]},{en:"SAD",sv:"ledsen",w:["glad","rädd"]},
-    {en:"BIG",sv:"stor",w:["liten","smal"]},{en:"SMALL",sv:"liten",w:["stor","tung"]},
+    {en:"ANGRY",sv:"arg",w:["glad","ledsen"]},{en:"SCARED",sv:"rädd",w:["modig","glad"]},
+    {en:"TIRED",sv:"trött",w:["pigg","arg"]},{en:"HUNGRY",sv:"hungrig",w:["trött","mätt"]},
+    {en:"RUN",sv:"springa",w:["hoppa","gå"]},{en:"JUMP",sv:"hoppa",w:["springa","simma"]},
+    {en:"SWIM",sv:"simma",w:["flyga","springa"]},{en:"FLY",sv:"flyga",w:["simma","hoppa"]},
+    {en:"CLIMB",sv:"klättra",w:["hoppa","falla"]},{en:"SLEEP",sv:"sova",w:["äta","springa"]},
+    {en:"PLAY",sv:"leka",w:["arbeta","sova"]},{en:"LAUGH",sv:"skratta",w:["gråta","sjunga"]},
     {en:"FAST",sv:"snabb",w:["långsam","tyst"]},{en:"SLOW",sv:"långsam",w:["snabb","stark"]},
     {en:"HOT",sv:"het",w:["kall","blöt"]},{en:"COLD",sv:"kall",w:["het","mjuk"]},
-    {en:"STRONG",sv:"stark",w:["svag","mjuk"]},{en:"FRIEND",sv:"vän",w:["fiende","granne"]},
-    {en:"SCHOOL",sv:"skola",w:["affär","sjukhus"]},{en:"TEACHER",sv:"lärare",w:["läkare","polis"]},
-    {en:"FAMILY",sv:"familj",w:["granne","kompisar"]},{en:"COLOUR",sv:"färg",w:["form","storlek"]},
-    {en:"HUNGRY",sv:"hungrig",w:["trött","glad"]},{en:"SLEEP",sv:"sova",w:["äta","springa"]},
-    {en:"PLAY",sv:"leka",w:["arbeta","sova"]},{en:"LEARN",sv:"lära sig",w:["glömma","sova"]},
-    {en:"BEAUTIFUL",sv:"vacker",w:["ful","gammal"]},{en:"TOGETHER",sv:"tillsammans",w:["ensam","borta"]}
+    {en:"STRONG",sv:"stark",w:["svag","mjuk"]},{en:"SOFT",sv:"mjuk",w:["hård","stark"]}
+  ]},
+  5:{badge:"🦅 Åk 5",dark:false,words:[
+    {en:"BRAVE",sv:"modig",w:["rädd","snäll"]},{en:"CLEVER",sv:"smart",w:["dum","lat"]},
+    {en:"FUNNY",sv:"rolig",w:["tråkig","dum"]},{en:"HONEST",sv:"ärlig",w:["falsk","snäll"]},
+    {en:"KIND",sv:"snäll",w:["elak","modig"]},{en:"GENTLE",sv:"varsam",w:["hård","snabb"]},
+    {en:"NOISY",sv:"högljudd",w:["tyst","snäll"]},{en:"QUIET",sv:"tyst",w:["högljudd","snabb"]},
+    {en:"THIRSTY",sv:"törstig",w:["trött","arg"]},{en:"CURIOUS",sv:"nyfiken",w:["uttråkad","rädd"]},
+    {en:"WHISPER",sv:"viska",w:["skrika","sjunga"]},{en:"DISCOVER",sv:"upptäcka",w:["dölja","glömma"]},
+    {en:"ADVENTURE",sv:"äventyr",w:["vardag","tråkighet"]},{en:"SHADOW",sv:"skugga",w:["ljus","reflex"]},
+    {en:"THUNDER",sv:"åska",w:["storm","blixt"]},{en:"DREAM",sv:"dröm",w:["tanke","minne"]},
+    {en:"FRIEND",sv:"vän",w:["fiende","bekant"]},{en:"SCHOOL",sv:"skola",w:["affär","sjukhus"]},
+    {en:"TEACHER",sv:"lärare",w:["läkare","polis"]},{en:"TOGETHER",sv:"tillsammans",w:["ensam","borta"]}
+  ]},
+  6:{badge:"⚡ Åk 6",dark:true,words:[
+    {en:"ENORMOUS",sv:"enorm",w:["liten","vanlig"]},{en:"ANCIENT",sv:"forntida",w:["modern","ung"]},
+    {en:"MYSTERIOUS",sv:"mystisk",w:["tydlig","vanlig"]},{en:"EXHAUSTED",sv:"utmattad",w:["pigg","lugn"]},
+    {en:"GENEROUS",sv:"generös",w:["snål","elak"]},{en:"FURIOUS",sv:"rasande",w:["nöjd","trött"]},
+    {en:"INVISIBLE",sv:"osynlig",w:["synlig","tydlig"]},{en:"DELICIOUS",sv:"läcker",w:["ful","dålig"]},
+    {en:"ACHIEVE",sv:"uppnå",w:["misslyckas","glömma"]},{en:"PERSUADE",sv:"övertala",w:["avvisa","tvinga"]},
+    {en:"COURAGE",sv:"mod",w:["feghet","likgiltighet"]},{en:"PATIENCE",sv:"tålamod",w:["otålighet","ilska"]},
+    {en:"KNOWLEDGE",sv:"kunskap",w:["okunnighet","glömska"]},{en:"COMMUNICATE",sv:"kommunicera",w:["tiga","isolera"]},
+    {en:"DETERMINED",sv:"besluten",w:["tveksam","osäker"]},{en:"MAGNIFICENT",sv:"praktfull",w:["trist","ful"]},
+    {en:"STRUGGLE",sv:"kämpa",w:["vila","skratta"]},{en:"ENVIRONMENT",sv:"miljö",w:["natur","plats"]},
+    {en:"RESPONSIBLE",sv:"ansvarsfull",w:["ansvarslös","slarvig"]},{en:"CELEBRATE",sv:"fira",w:["sörja","glömma"]}
   ]}
 };
 
@@ -457,6 +485,8 @@ const ENEMIES = [
   { name:'GLOSGROTTAN', maxHp:20, color:'#e8a020', accent:'#b06010' },
   { name:'STAVDRAKEN',  maxHp:20, color:'#9b59b6', accent:'#6c3483' },
   { name:'VERBVARGEN',  maxHp:20, color:'#c0392b', accent:'#922b21' },
+  { name:'ADJEKTROLL',  maxHp:20, color:'#16a34a', accent:'#064e1a' },
+  { name:'ORDMÄSTARN',  maxHp:20, color:'#0369a1', accent:'#082f49' },
   { name:'SHADOWSPELL', maxHp:20, color:'#2c3e50', accent:'#8e44ad' },
 ];
 
@@ -783,21 +813,21 @@ function showWin(lost=false){
     document.getElementById('winSub').textContent='Fienden vann... Försök igen! 😤';
   } else {
     playerState='victory'; enemyState='faint';
-    isDark()?sndWin():lvl<4?sndLevelUp():sndWin();
+    isDark()?sndWin():lvl<6?sndLevelUp():sndWin();
     document.getElementById('winIco').textContent=isDark()?'⚡':'🎉';
     document.getElementById('winScr').querySelector('.win-ttl').textContent='SEGER!';
     document.getElementById('winSub').textContent=
-      lvl===4?'Supersvår klar! Du är mäster! ⚡':
-      lvl<4?`Nivå ${lvl} klar! Redo för nästa? 🚀`:
+      lvl===6?'Åk 6 klar! Du är en ordmästare! 👑':
+      lvl<6?`Åk ${lvl} klar! Redo för nästa? 🚀`:
       'Du klarade ALLT! Pokémästare! 👑';
   }
   const nb=document.getElementById('btnNext');
-  nb.style.display=(!lost&&lvl<4)?'block':'none';
-  nb.className='win-btn btn-next'+(lvl===3?' jedi-next':'');
-  nb.textContent=lvl===3?'Supersvår ⚡':'Nästa nivå ➡️';
+  nb.style.display=(!lost&&lvl<6)?'block':'none';
+  nb.className='win-btn btn-next'+(lvl===5?' jedi-next':'');
+  nb.textContent=lvl===5?'Åk 6 ⚡':'Nästa åk ➡️';
   document.getElementById('winScr').style.display='flex';
   if(!lost){
-    const cols=isDark()?['#c084fc','#818cf8','#38bdf8','#e879f9']:['#ffd700','#ff6b6b','#4ecdc4','#45b7d1','#a8e06d'];
+    const cols=BANKS[lvl].dark?['#c084fc','#818cf8','#38bdf8','#e879f9']:['#ffd700','#ff6b6b','#4ecdc4','#45b7d1','#a8e06d'];
     for(let i=0;i<80;i++){
       const c2=document.createElement('div'); c2.className='confetti';
       c2.style.cssText='left:'+Math.random()*100+'%;background:'+cols[i%cols.length]+';animation-duration:'+(1.5+Math.random()*2.5)+'s;animation-delay:'+Math.random()*2+'s;border-radius:'+(Math.random()>.5?'50%':'3px');
@@ -821,10 +851,12 @@ document.getElementById('sndBtn').onclick=()=>{
 };
 async function fetchWordsForLevel(lvlNum){
   const prompts={
-    1:`Generate 20 simple English words for Swedish children age 6-8. Basic nouns: animals, nature, food. Give correct Swedish translation and 2 wrong Swedish options. Return ONLY a JSON array. Example format: [{"en":"CAT","sv":"katt","w":["hund","fagel"]}]. No markdown. Just the array.`,
-    2:`Generate 20 English words for Swedish children age 8-9. Nouns: home, school, body parts. Give correct Swedish translation and 2 wrong Swedish options. Return ONLY a JSON array. Example: [{"en":"DOOR","sv":"dorr","w":["fonster","tak"]}]. No markdown. Just the array.`,
-    3:`Generate 20 English words for Swedish children age 9-10. Adjectives and verbs. Give correct Swedish translation and 2 wrong Swedish options. Return ONLY a JSON array. Example: [{"en":"BRAVE","sv":"modig","w":["radd","snall"]}]. No markdown. Just the array.`,
-    4:`Generate 20 English words for Swedish children age 9 grade 3. Slightly harder everyday words: happy, school, together, learn, beautiful. Give correct Swedish translation and 2 wrong Swedish options. Return ONLY a JSON array. Example: [{"en":"HAPPY","sv":"glad","w":["ledsen","arg"]}]. No markdown. Just the array.`
+    1:`Generate 20 simple English words for Swedish grade 1 children (age 7). Basic nouns: animals, colors, numbers, everyday objects. Swedish translation + 2 wrong Swedish options. Return ONLY a JSON array like [{"en":"CAT","sv":"katt","w":["hund","fagel"]}]. No markdown.`,
+    2:`Generate 20 English words for Swedish grade 2 (age 8). Nouns: home, food, clothes, weather. Swedish translation + 2 wrong options. Return ONLY JSON array like [{"en":"BREAD","sv":"brod","w":["smor","ost"]}]. No markdown.`,
+    3:`Generate 20 English words for Swedish grade 3 (age 9). Body parts, nature, household objects. Swedish translation + 2 wrong options. Return ONLY JSON array like [{"en":"HAND","sv":"hand","w":["fot","arm"]}]. No markdown.`,
+    4:`Generate 20 English words for Swedish grade 4 (age 10). Common adjectives and action verbs: happy, run, jump, angry, tired. Swedish translation + 2 wrong options. Return ONLY JSON array like [{"en":"HAPPY","sv":"glad","w":["ledsen","arg"]}]. No markdown.`,
+    5:`Generate 20 English words for Swedish grade 5 (age 11). More complex adjectives and abstract nouns: brave, curious, adventure, discover, shadow. Swedish translation + 2 wrong options. Return ONLY JSON array like [{"en":"BRAVE","sv":"modig","w":["radd","snall"]}]. No markdown.`,
+    6:`Generate 20 advanced English words for Swedish grade 6 (age 12). Abstract vocabulary: enormous, determined, communicate, responsible, generous, patient. Swedish translation + 2 wrong options. Return ONLY JSON array like [{"en":"ENORMOUS","sv":"enorm","w":["liten","vanlig"]}]. No markdown.`
   }
 
   const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -858,10 +890,10 @@ async function refreshAllWords(){
   spin.textContent='🌀';
   overlay.style.display='flex';
 
-  const levelNames=["Nivå 1","Nivå 2","Nivå 3","Supersvår"];
+  const levelNames=["Åk 1","Åk 2","Åk 3","Åk 4","Åk 5","Åk 6"];
   let failed=false;
 
-  for(let i=1;i<=4;i++){
+  for(let i=1;i<=6;i++){
     sub.textContent='Genererar '+levelNames[i-1]+'... ('+i+'/4)';
     try{
       const words = await fetchWordsForLevel(i);
