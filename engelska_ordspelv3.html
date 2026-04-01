@@ -475,6 +475,12 @@ body{overflow-y:auto;}
   color:#1a1a2e;box-shadow:0 8px 32px rgba(255,150,0,.6);
   transition:transform .5s cubic-bezier(.68,-0.55,.27,1.55);}
 .streak-toast.show{transform:translateX(-50%) translateY(0);}
+
+.sync-dot{position:fixed;bottom:14px;right:14px;width:10px;height:10px;
+  border-radius:50%;background:#6abf3e;z-index:500;
+  box-shadow:0 0 6px #6abf3e;animation:syncPulse 2s ease-in-out infinite;}
+.sync-dot.error{background:#f87171;box-shadow:0 0 6px #f87171;animation:none;}
+@keyframes syncPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
 </style>
 </head>
 <body>
@@ -746,6 +752,54 @@ body{overflow-y:auto;}
     <button class="win-btn btn-menu" onclick="goMenu()">Meny 🏠</button>
   </div>
 </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+  // ── FIREBASE CONFIG ────────────────────────────────────────────────────────
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCUh-61uIzcN9d9t9uyKclKNDdSmwikMlk",
+    authDomain: "larskogen-f3103.firebaseapp.com",
+    projectId: "larskogen-f3103",
+    storageBucket: "larskogen-f3103.firebasestorage.app",
+    messagingSenderId: "1096023245855",
+    appId: "1:1096023245855:web:b4eda85b3a24cd2d06812a"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db    = getFirestore(fbApp);
+
+  // ── FIRESTORE HELPERS ──────────────────────────────────────────────────────
+  // Expose to global scope so the rest of the script can use them
+  window._fb = {
+    async getDoc(path){
+      try{
+        const snap = await getDoc(doc(db, ...path.split('/')));
+        return snap.exists() ? snap.data() : null;
+      }catch(e){ console.warn('FB getDoc error',e); return null; }
+    },
+    async setDoc(path, data){
+      try{ await setDoc(doc(db, ...path.split('/')), data, {merge:true}); }
+      catch(e){ console.warn('FB setDoc error',e); }
+    },
+    async deleteDoc(path){
+      try{ await deleteDoc(doc(db, ...path.split('/'))); }
+      catch(e){ console.warn('FB deleteDoc error',e); }
+    },
+    async getDocs(collPath){
+      try{
+        const snap = await getDocs(collection(db, ...collPath.split('/')));
+        return snap.docs.map(d=>({id:d.id,...d.data()}));
+      }catch(e){ console.warn('FB getDocs error',e); return []; }
+    }
+  };
+  window._fbReady = true;
+  // Trigger init if game already waiting
+  if(window._fbReadyCb) window._fbReadyCb();
+  </script>
 
 <script>
 // Generate stars
@@ -1848,7 +1902,7 @@ function showWin(lost=false){
       lvl===6?`${subject==='clk'?'Nivå 6':'Åk 6'} klar! Du är en ${subject==='mat'?'matteguru':subject==='clk'?'klockexpert':subject==='so'?'SO-expert':subject==='no'?'NO-expert':'ordmästare'}! 👑`:
       `${subject==='clk'?'Nivå':'Åk'} ${lvl} klar! Redo för nästa? 🚀`;
     // Save progress
-    markLevelDone(subject, lvl);
+    markLevelDone(subject, lvl).catch(console.warn);
   }
   const nb=document.getElementById('btnNext');
   nb.style.display=(!lost&&lvl<6)?'block':'none';
@@ -1868,17 +1922,39 @@ function showWin(lost=false){
 
 
 // ── STREAK SYSTEM ─────────────────────────────────────────────────────────────
-function streakKey(userId){ return 'larskogen_streak_'+(userId||'anon'); }
+// ── FIRESTORE STORAGE (with localStorage fallback while FB loads) ─────────────
+function lsGet(key){ try{const r=localStorage.getItem(key);return r?JSON.parse(r):null;}catch(e){return null;} }
+function lsSet(key,val){ try{localStorage.setItem(key,JSON.stringify(val));}catch(e){} }
 
-function loadStreak(userId){
+async function fbGet(path){ return window._fb ? window._fb.getDoc(path) : null; }
+async function fbSet(path,data){
+  if(!window._fb) return;
+  const dot=document.getElementById('syncDot');
   try{
-    const raw = localStorage.getItem(streakKey(userId));
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return { count:0, lastDate:null, longestCount:0 };
+    await window._fb.setDoc(path,data);
+    if(dot){dot.classList.remove('error');dot.style.background='#6abf3e';dot.style.boxShadow='0 0 6px #6abf3e';}
+  }catch(e){
+    console.warn('FB setDoc error',e);
+    if(dot){dot.classList.add('error');}
+  }
 }
-function saveStreak(s, userId){
-  try{ localStorage.setItem(streakKey(userId), JSON.stringify(s)); }catch(e){}
+async function fbDel(path){ if(window._fb) await window._fb.deleteDoc(path); }
+async function fbList(path){ return window._fb ? window._fb.getDocs(path) : []; }
+
+function streakKey(userId){ return 'ls_streak_'+(userId||'anon'); }
+
+async function loadStreak(userId){
+  const id = userId||'anon';
+  // Try Firestore first
+  const remote = await fbGet('streaks/'+id);
+  if(remote) return remote;
+  // Fallback to localStorage
+  return lsGet(streakKey(id)) || { count:0, lastDate:null, longestCount:0 };
+}
+async function saveStreak(s, userId){
+  const id = userId||'anon';
+  lsSet(streakKey(id), s); // always save locally too
+  await fbSet('streaks/'+id, s);
 }
 
 function todayStr(){ return new Date().toISOString().slice(0,10); } // "2025-03-31"
@@ -1887,9 +1963,9 @@ function yesterdayStr(){
   return d.toISOString().slice(0,10);
 }
 
-function updateStreak(){
+async function updateStreak(){
   if(!activeUser) return;
-  const s = loadStreak(activeUser.id);
+  const s = await loadStreak(activeUser.id);
   const today = todayStr();
   let newStreak = false;
 
@@ -1912,7 +1988,7 @@ function updateStreak(){
     }
   }
 
-  saveStreak(s, activeUser.id);
+  await saveStreak(s, activeUser.id);
   renderStreakUI(s, newStreak);
 }
 
@@ -1960,8 +2036,8 @@ function renderStreakUI(s, showToast){
   }
 }
 
-function loadStreakForUser(u){
-  const s = loadStreak(u ? u.id : null);
+async function loadStreakForUser(u){
+  const s = await loadStreak(u ? u.id : null);
   renderStreakUI(s, false);
 }
 
@@ -1972,23 +2048,38 @@ const AVATARS = ['🧒','👦','👧','🧑','🦊','🐉','🦄','🐸','🐼',
 let activeUser = null; // { id, name, avatar }
 
 // Storage helpers — per-user key
-function usersKey(){ return 'larskogen_users'; }
-function progKey(id){ return 'larskogen_prog_'+id; }
+function usersKey(){ return 'ls_users'; }
+function progKey(id){ return 'ls_prog_'+id; }
 
-function loadUsers(){
-  try{ return JSON.parse(localStorage.getItem(usersKey())||'[]'); }catch(e){return [];}
+async function loadUsers(){
+  // Try Firestore
+  const remote = await fbList('users');
+  if(remote && remote.length > 0){
+    lsSet(usersKey(), remote); // cache locally
+    return remote;
+  }
+  // Fallback localStorage
+  return lsGet(usersKey()) || [];
 }
-function saveUsers(u){ try{localStorage.setItem(usersKey(),JSON.stringify(u));}catch(e){} }
-
-function loadProgress(userId){
+async function saveUsers(users){
+  lsSet(usersKey(), users);
+  // Save each user as a separate doc for easy retrieval
+  for(const u of users){
+    await fbSet('users/'+u.id, {id:u.id, name:u.name, avatar:u.avatar});
+  }
+}
+async function loadProgress(userId){
   const id = userId || (activeUser&&activeUser.id);
   if(!id) return emptyProgress();
-  try{ return JSON.parse(localStorage.getItem(progKey(id))||'null') || emptyProgress(); }catch(e){return emptyProgress();}
+  const remote = await fbGet('progress/'+id);
+  if(remote) return {...emptyProgress(), ...remote};
+  return lsGet(progKey(id)) || emptyProgress();
 }
-function saveProgress(p, userId){
+async function saveProgress(p, userId){
   const id = userId || (activeUser&&activeUser.id);
   if(!id) return;
-  try{ localStorage.setItem(progKey(id), JSON.stringify(p)); }catch(e){}
+  lsSet(progKey(id), p);
+  await fbSet('progress/'+id, p);
 }
 function emptyProgress(){ return {eng:[0,0,0,0,0,0],mat:[0,0,0,0,0,0],clk:[0,0,0,0,0,0],so:[0,0,0,0,0,0],no:[0,0,0,0,0,0]}; }
 
@@ -1996,8 +2087,8 @@ function countDone(arr){ return (arr||[]).reduce((a,b)=>a+b,0); }
 function totalDoneFor(p){ return Object.values(p).flat().reduce((a,b)=>a+b,0); }
 
 // ── USER SCREEN ───────────────────────────────────────────────────────────────
-function showUserScreen(){
-  renderUserList();
+async function showUserScreen(){
+  await renderUserList();
   document.getElementById('userScreen').style.display='flex';
   document.getElementById('subjScreen').style.display='none';
   document.getElementById('userNameInput').value='';
@@ -2008,16 +2099,16 @@ function hideUserScreen(){
   document.getElementById('subjScreen').style.display='flex';
 }
 
-function renderUserList(){
-  const users = loadUsers();
+async function renderUserList(){
+  const users = await loadUsers();
   const list = document.getElementById('userList');
   list.innerHTML='';
   if(users.length===0){
     list.innerHTML='<div style="color:rgba(255,255,255,.4);font-size:13px;text-align:center;padding:8px">Inga profiler ännu — skapa din första!</div>';
     return;
   }
-  users.forEach(u=>{
-    const p = loadProgress(u.id);
+  for(const u of users){
+    const p = await loadProgress(u.id);
     const done = totalDoneFor(p);
     const pct = Math.round(done/TOTAL_LEVELS*100);
     const div = document.createElement('div');
@@ -2032,14 +2123,14 @@ function renderUserList(){
       <div class="u-del" onclick="deleteUser('${u.id}',event)" title="Ta bort">🗑️</div>`;
     div.addEventListener('click', ()=>selectUser(u));
     list.appendChild(div);
-  });
+  }
 }
 
-function addUser(){
+async function addUser(){
   const input = document.getElementById('userNameInput');
   const name = input.value.trim();
   if(!name) { input.focus(); input.style.borderColor='#ff6b6b'; setTimeout(()=>input.style.borderColor='',800); return; }
-  const users = loadUsers();
+  const users = await loadUsers();
   if(users.some(u=>u.name.toLowerCase()===name.toLowerCase())){
     input.style.borderColor='#fbbf24';
     setTimeout(()=>input.style.borderColor='',800);
@@ -2049,27 +2140,30 @@ function addUser(){
   const avatar = AVATARS[Math.floor(Math.random()*AVATARS.length)];
   const newUser = {id, name, avatar};
   users.push(newUser);
-  saveUsers(users);
+  await saveUsers(users);
   sndCorrect();
   selectUser(newUser);
 }
 
-function selectUser(u){
+async function selectUser(u){
   activeUser = u;
   try{localStorage.setItem('larskogen_lastuser',u.id);}catch(e){}
   document.getElementById('activeUserName').textContent = u.name;
   document.getElementById('activeUserIco').textContent = u.avatar;
-  updateProgressUI(loadProgress());
-  loadStreakForUser(u);
+  updateProgressUI(await loadProgress());
+  await loadStreakForUser(u);
   sndClick();
   hideUserScreen();
 }
 
-function deleteUser(id, e){
+async function deleteUser(id, e){
   e.stopPropagation();
-  const users = loadUsers().filter(u=>u.id!==id);
-  saveUsers(users);
+  const users = (await loadUsers()).filter(u=>u.id!==id);
+  await saveUsers(users);
   try{ localStorage.removeItem(progKey(id)); }catch(x){}
+  await fbDel('users/'+id);
+  await fbDel('progress/'+id);
+  await fbDel('streaks/'+id);
   if(activeUser&&activeUser.id===id){
     activeUser=null;
     document.getElementById('activeUserName').textContent='Spelare';
@@ -2080,14 +2174,14 @@ function deleteUser(id, e){
 }
 
 // ── PROGRESS ─────────────────────────────────────────────────────────────────
-function markLevelDone(subj, lvlNum){
+async function markLevelDone(subj, lvlNum){
   if(!activeUser) return;
-  const p = loadProgress();
+  const p = await loadProgress();
   if(!p[subj]) p[subj]=[0,0,0,0,0,0];
   p[subj][lvlNum-1] = 1;
-  saveProgress(p);
+  await saveProgress(p);
   updateProgressUI(p);
-  updateStreak(); // register today as played
+  await updateStreak(); // register today as played
   if(totalDoneFor(p) >= TOTAL_LEVELS){
     setTimeout(showAlldone, 1800);
   }
@@ -2127,27 +2221,30 @@ function showAlldone(){
   [262,330,392,523,659,784,1047].forEach((f,i)=>tone(f,'sine',.4,.3,i*.12));
 }
 
-function closeAlldone(){
+async function closeAlldone(){
   document.getElementById('alldoneScr').classList.remove('show');
   if(activeUser){
-    saveProgress(emptyProgress());
+    await saveProgress(emptyProgress());
     updateProgressUI(emptyProgress());
   }
 }
 
 // ── INIT: show user screen on first load ─────────────────────────────────────
-(function(){
-  const users = loadUsers();
-  if(users.length===0){
-    // First time ever — show user screen directly
-    document.getElementById('userScreen').style.display='flex';
-    document.getElementById('subjScreen').style.display='none';
-  } else {
-    // Auto-select last used user
-    const lastId = localStorage.getItem('larskogen_lastuser');
-    const last = users.find(u=>u.id===lastId) || users[0];
-    selectUser(last);
+(async function(){
+  // Wait for Firebase to be ready (up to 3s), then init
+  async function init(){
+    const users = await loadUsers();
+    if(users.length===0){
+      document.getElementById('userScreen').style.display='flex';
+      document.getElementById('subjScreen').style.display='none';
+    } else {
+      const lastId = localStorage.getItem('larskogen_lastuser');
+      const last = users.find(u=>u.id===lastId) || users[0];
+      await selectUser(last);
+    }
   }
+  if(window._fbReady){ await init(); }
+  else { window._fbReadyCb = init; setTimeout(init, 3000); } // fallback after 3s
 })();
 
 window.addEventListener('resize',()=>{
@@ -2233,5 +2330,6 @@ async function refreshAllWords(){
 }
 </script>
 <div class="streak-toast" id="streakToast">🔥 Ny streak!</div>
+<div class="sync-dot" id="syncDot" title="Firebase sync"></div>
 </body>
 </html>
