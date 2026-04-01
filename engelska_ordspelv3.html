@@ -481,6 +481,87 @@ body{overflow-y:auto;}
   box-shadow:0 0 6px #6abf3e;animation:syncPulse 2s ease-in-out infinite;}
 .sync-dot.error{background:#f87171;box-shadow:0 0 6px #f87171;animation:none;}
 @keyframes syncPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+
+/* ── ADMIN PANEL ─────────────────────────────────────────────── */
+.admin-trigger{position:fixed;bottom:14px;left:14px;z-index:500;
+  width:32px;height:32px;border-radius:50%;background:transparent;
+  border:none;cursor:pointer;opacity:0;font-size:18px;}
+.admin-scr{position:fixed;inset:0;z-index:600;display:none;flex-direction:column;
+  background:rgba(5,10,25,.96);backdrop-filter:blur(12px);overflow-y:auto;padding:24px 20px 40px;}
+.admin-scr.show{display:flex;}
+.admin-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px;}
+.admin-title{font-family:'Fredoka One',cursive;font-size:30px;color:#60a5fa;
+  text-shadow:0 0 20px rgba(96,165,250,.4);}
+.admin-close{background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);
+  border-radius:50px;padding:7px 18px;font-family:'Fredoka One',cursive;
+  font-size:15px;color:#fff;cursor:pointer;transition:all .2s;}
+.admin-close:hover{background:rgba(255,80,80,.3);}
+
+/* Stats row */
+.admin-stats{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;}
+.stat-card{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:14px 20px;flex:1;min-width:100px;text-align:center;}
+.stat-num{font-family:'Fredoka One',cursive;font-size:32px;color:#fbbf24;}
+.stat-lbl{font-size:11px;color:rgba(255,255,255,.5);font-weight:700;margin-top:2px;text-transform:uppercase;}
+
+/* Password prompt */
+.admin-pw-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:60vh;gap:16px;}
+.admin-pw-title{font-family:'Fredoka One',cursive;font-size:24px;color:#60a5fa;}
+.admin-pw-input{background:rgba(255,255,255,.1);border:2px solid rgba(96,165,250,.4);
+  border-radius:14px;padding:12px 20px;font-size:18px;color:#fff;outline:none;
+  font-family:'Nunito',sans-serif;font-weight:700;width:220px;text-align:center;}
+.admin-pw-input:focus{border-color:#60a5fa;}
+.admin-pw-btn{background:linear-gradient(135deg,#2563eb,#1d4ed8);border:none;
+  border-radius:14px;padding:12px 28px;font-family:'Fredoka One',cursive;
+  font-size:18px;color:#fff;cursor:pointer;transition:transform .2s;}
+.admin-pw-btn:hover{transform:scale(1.06);}
+.admin-pw-err{color:#f87171;font-size:13px;font-weight:700;min-height:18px;}
+
+/* User table */
+.admin-section-title{font-family:'Fredoka One',cursive;font-size:18px;
+  color:rgba(255,255,255,.7);margin-bottom:12px;margin-top:4px;}
+.admin-user-list{display:flex;flex-direction:column;gap:10px;}
+.admin-user-row{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);
+  border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.au-avatar{font-size:26px;width:34px;text-align:center;}
+.au-info{flex:1;min-width:120px;}
+.au-name{font-family:'Fredoka One',cursive;font-size:17px;color:#fff;}
+.au-meta{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px;}
+.au-prog{display:flex;gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap;}
+.au-subj{font-size:10px;background:rgba(255,255,255,.1);border-radius:6px;
+  padding:2px 7px;color:rgba(255,255,255,.65);}
+.au-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.au-btn{border:none;border-radius:10px;padding:7px 13px;font-family:'Fredoka One',cursive;
+  font-size:13px;cursor:pointer;transition:all .2s;touch-action:manipulation;}
+.au-btn.reset{background:rgba(251,191,36,.2);color:#fbbf24;border:1.5px solid rgba(251,191,36,.3);}
+.au-btn.reset:hover{background:rgba(251,191,36,.35);}
+.au-btn.del{background:rgba(248,113,113,.2);color:#f87171;border:1.5px solid rgba(248,113,113,.3);}
+.au-btn.del:hover{background:rgba(248,113,113,.35);}
+.au-btn.streak{background:rgba(96,165,250,.2);color:#60a5fa;border:1.5px solid rgba(96,165,250,.3);}
+.au-btn.streak:hover{background:rgba(96,165,250,.35);}
+
+/* Confirm overlay */
+.admin-confirm{position:fixed;inset:0;z-index:700;display:none;align-items:center;
+  justify-content:center;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);}
+.admin-confirm.show{display:flex;}
+.confirm-box{background:#0f172a;border:2px solid rgba(255,255,255,.15);border-radius:24px;
+  padding:30px 28px;max-width:340px;text-align:center;}
+.confirm-msg{font-size:16px;color:#e2e8f0;font-weight:700;margin-bottom:20px;line-height:1.5;}
+.confirm-btns{display:flex;gap:10px;justify-content:center;}
+.confirm-btn{border:none;border-radius:12px;padding:10px 24px;font-family:'Fredoka One',cursive;
+  font-size:16px;cursor:pointer;transition:transform .2s;}
+.confirm-btn:hover{transform:scale(1.05);}
+.confirm-btn.yes{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;}
+.confirm-btn.no{background:rgba(255,255,255,.15);color:#fff;}
+
+@media(max-width:600px){
+  .au-actions{width:100%;}
+  .au-btn{flex:1;text-align:center;}
+  .admin-stats{gap:8px;}
+  .stat-card{min-width:80px;padding:10px 12px;}
+  .stat-num{font-size:24px;}
+}
 </style>
 </head>
 <body>
@@ -2255,6 +2336,182 @@ window.addEventListener('resize',()=>{
     if(pc&&pc.offsetWidth>0){pc.width=pc.offsetWidth;pc.height=pc.offsetHeight;}
   }
 });
+
+// ── ADMIN PANEL ────────────────────────────────────────────────────────────────
+const ADMIN_PW = 'larskogen2025'; // ändra detta till ditt eget lösenord
+let adminTapCount = 0;
+let adminTapTimer = null;
+let adminUnlocked = false;
+let _confirmCb = null;
+
+function adminTap(){
+  adminTapCount++;
+  clearTimeout(adminTapTimer);
+  adminTapTimer = setTimeout(()=>{ adminTapCount=0; }, 2000);
+  if(adminTapCount >= 5){
+    adminTapCount = 0;
+    openAdmin();
+  }
+}
+
+function openAdmin(){
+  document.getElementById('adminScr').classList.add('show');
+  if(adminUnlocked){
+    document.getElementById('adminPwWrap').style.display='none';
+    document.getElementById('adminContent').style.display='block';
+    loadAdminData();
+  } else {
+    document.getElementById('adminPwWrap').style.display='flex';
+    document.getElementById('adminContent').style.display='none';
+    setTimeout(()=>document.getElementById('adminPwInput').focus(), 200);
+  }
+}
+
+function closeAdmin(){
+  document.getElementById('adminScr').classList.remove('show');
+}
+
+function checkAdminPw(){
+  const val = document.getElementById('adminPwInput').value;
+  if(val === ADMIN_PW){
+    adminUnlocked = true;
+    document.getElementById('adminPwInput').value='';
+    document.getElementById('adminPwErr').textContent='';
+    document.getElementById('adminPwWrap').style.display='none';
+    document.getElementById('adminContent').style.display='block';
+    loadAdminData();
+  } else {
+    document.getElementById('adminPwErr').textContent='Fel lösenord!';
+    document.getElementById('adminPwInput').style.borderColor='#f87171';
+    setTimeout(()=>{
+      document.getElementById('adminPwInput').style.borderColor='';
+      document.getElementById('adminPwErr').textContent='';
+    }, 1500);
+  }
+}
+
+async function loadAdminData(){
+  const list = document.getElementById('adminUserList');
+  list.innerHTML='<div style="color:rgba(255,255,255,.3);font-size:14px;padding:10px">Laddar från Firebase...</div>';
+
+  const users = await loadUsers();
+  if(users.length===0){
+    list.innerHTML='<div style="color:rgba(255,255,255,.3);font-size:14px;padding:10px">Inga användare ännu.</div>';
+    document.getElementById('aStatUsers').textContent='0';
+    return;
+  }
+
+  // Load all progress and streaks in parallel
+  const progArr  = await Promise.all(users.map(u=>loadProgress(u.id)));
+  const streakArr= await Promise.all(users.map(u=>loadStreak(u.id)));
+
+  // Stats
+  const totalLevelsDone = progArr.reduce((sum,p)=>sum+totalDoneFor(p),0);
+  const maxStreak = streakArr.reduce((mx,s)=>Math.max(mx,s.longestCount||s.count||0),0);
+  const topUser = users.reduce((best,u,i)=>
+    totalDoneFor(progArr[i]) > totalDoneFor(progArr[users.indexOf(best)]) ? u : best, users[0]);
+
+  document.getElementById('aStatUsers').textContent  = users.length;
+  document.getElementById('aStatLevels').textContent = totalLevelsDone;
+  document.getElementById('aStatStreak').textContent = maxStreak + '🔥';
+  document.getElementById('aStatTop').textContent    = topUser ? topUser.avatar + ' ' + topUser.name.slice(0,8) : '—';
+
+  // Build user rows
+  list.innerHTML='';
+  users.forEach((u,i)=>{
+    const p = progArr[i];
+    const s = streakArr[i];
+    const done = totalDoneFor(p);
+    const pct = Math.round(done/TOTAL_LEVELS*100);
+
+    // Per-subject mini indicators
+    const subjInfo = ['eng','mat','clk','so','no'].map(sub=>{
+      const d = (p[sub]||[]).reduce((a,b)=>a+b,0);
+      const emojis = {eng:'🇬🇧',mat:'🔢',clk:'🕐',so:'🌍',no:'🔬'};
+      return `<span class="au-subj">${emojis[sub]} ${d}/6</span>`;
+    }).join('');
+
+    const row = document.createElement('div');
+    row.className='admin-user-row';
+    row.id='arow-'+u.id;
+    row.innerHTML=`
+      <div class="au-avatar">${u.avatar}</div>
+      <div class="au-info">
+        <div class="au-name">${u.name}</div>
+        <div class="au-meta">${done}/${TOTAL_LEVELS} nivåer · ${pct}% · Streak: ${s.count||0}🔥 (Rekord: ${s.longestCount||0})</div>
+        <div class="au-prog">${subjInfo}</div>
+      </div>
+      <div class="au-actions">
+        <button class="au-btn reset" onclick="adminResetProgress('${u.id}','${u.name}')">🔄 Nollställ</button>
+        <button class="au-btn streak" onclick="adminResetStreak('${u.id}','${u.name}')">🔥 Nollställ streak</button>
+        <button class="au-btn del" onclick="adminDeleteUser('${u.id}','${u.name}')">🗑️ Ta bort</button>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+// ── Admin actions ─────────────────────────────────────────────────────────────
+function showConfirm(msg, cb){
+  document.getElementById('confirmMsg').textContent = msg;
+  _confirmCb = cb;
+  document.getElementById('adminConfirm').classList.add('show');
+  document.getElementById('confirmYes').onclick = ()=>{ closeConfirm(); cb(); };
+}
+function closeConfirm(){
+  document.getElementById('adminConfirm').classList.remove('show');
+  _confirmCb = null;
+}
+
+async function adminResetProgress(userId, name){
+  showConfirm(`Nollställ ALL progress för ${name}?`, async()=>{
+    await fbSet('progress/'+userId, emptyProgress());
+    localStorage.removeItem(progKey(userId));
+    // If this is the active user, update UI
+    if(activeUser && activeUser.id===userId){
+      updateProgressUI(emptyProgress());
+    }
+    sndWrong();
+    await loadAdminData();
+  });
+}
+
+async function adminResetStreak(userId, name){
+  showConfirm(`Nollställ streak för ${name}?`, async()=>{
+    const empty = {count:0, lastDate:null, longestCount:0};
+    await fbSet('streaks/'+userId, empty);
+    localStorage.removeItem(streakKey(userId));
+    if(activeUser && activeUser.id===userId){
+      renderStreakUI(empty, false);
+    }
+    sndWrong();
+    await loadAdminData();
+  });
+}
+
+async function adminDeleteUser(userId, name){
+  showConfirm(`Ta bort användaren "${name}" helt? ALL data raderas permanent.`, async()=>{
+    // Remove from users list
+    const users = (await loadUsers()).filter(u=>u.id!==userId);
+    await saveUsers(users);
+    // Delete Firestore docs
+    await fbDel('users/'+userId);
+    await fbDel('progress/'+userId);
+    await fbDel('streaks/'+userId);
+    // Remove localStorage
+    localStorage.removeItem(progKey(userId));
+    localStorage.removeItem(streakKey(userId));
+    // If active user deleted — go to user screen
+    if(activeUser && activeUser.id===userId){
+      activeUser = null;
+      document.getElementById('activeUserName').textContent='Spelare';
+      document.getElementById('activeUserIco').textContent='🧒';
+      updateProgressUI(emptyProgress());
+    }
+    sndFaint();
+    await loadAdminData();
+  });
+}
+
 document.getElementById('sndBtn').onclick=()=>{
   soundOn=!soundOn;
   document.getElementById('sndBtn').textContent=soundOn?'🔊':'🔇';
@@ -2329,6 +2586,67 @@ async function refreshAllWords(){
   }
 }
 </script>
+
+<!-- ADMIN TRIGGER (invisible button bottom-left, click 5 times) -->
+<button class="admin-trigger" id="adminTrigger" onclick="adminTap()">⚙️</button>
+
+<!-- ADMIN SCREEN -->
+<div class="admin-scr" id="adminScr">
+
+  <!-- Password gate -->
+  <div class="admin-pw-wrap" id="adminPwWrap">
+    <div class="admin-pw-title">🔐 Admin</div>
+    <input class="admin-pw-input" id="adminPwInput" type="password"
+      placeholder="Lösenord" onkeydown="if(event.key==='Enter')checkAdminPw()">
+    <button class="admin-pw-btn" onclick="checkAdminPw()">Logga in</button>
+    <div class="admin-pw-err" id="adminPwErr"></div>
+  </div>
+
+  <!-- Admin content (shown after correct pw) -->
+  <div id="adminContent" style="display:none">
+    <div class="admin-header">
+      <div class="admin-title">🛠️ Lärskogen Admin</div>
+      <button class="admin-close" onclick="closeAdmin()">✕ Stäng</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="admin-stats">
+      <div class="stat-card">
+        <div class="stat-num" id="aStatUsers">—</div>
+        <div class="stat-lbl">Användare</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="aStatLevels">—</div>
+        <div class="stat-lbl">Nivåer klara</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="aStatStreak">—</div>
+        <div class="stat-lbl">Längsta streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="aStatTop">—</div>
+        <div class="stat-lbl">Bästa spelare</div>
+      </div>
+    </div>
+
+    <div class="admin-section-title">👥 Alla användare</div>
+    <div class="admin-user-list" id="adminUserList">
+      <div style="color:rgba(255,255,255,.3);font-size:14px">Laddar...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm dialog -->
+<div class="admin-confirm" id="adminConfirm">
+  <div class="confirm-box">
+    <div class="confirm-msg" id="confirmMsg">Är du säker?</div>
+    <div class="confirm-btns">
+      <button class="confirm-btn yes" id="confirmYes">Ja, gör det</button>
+      <button class="confirm-btn no" onclick="closeConfirm()">Avbryt</button>
+    </div>
+  </div>
+</div>
+
 <div class="streak-toast" id="streakToast">🔥 Ny streak!</div>
 <div class="sync-dot" id="syncDot" title="Firebase sync"></div>
 </body>
