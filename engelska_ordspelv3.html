@@ -446,6 +446,35 @@ body{overflow-y:auto;}
   .user-input{font-size:16px;}
   .user-add-btn{font-size:16px;padding:12px 14px;}
 }
+
+/* NO subject card */
+.subj-card.no{border-color:#a3e635;}.subj-card.no:hover{box-shadow:0 10px 36px rgba(130,220,40,.5);}
+
+/* ── STREAK WIDGET ── */
+.streak-bar{display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-bottom:10px;flex-wrap:wrap;}
+.streak-chip{background:rgba(255,255,255,.13);border:2.5px solid rgba(255,180,0,.5);
+  border-radius:50px;padding:7px 18px;display:flex;align-items:center;gap:8px;
+  font-family:'Fredoka One',cursive;font-size:17px;color:#ffd700;
+  text-shadow:0 1px 4px rgba(0,0,0,.3);}
+.streak-chip .fl{font-size:22px;}
+.streak-chip.cold{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.5);}
+.streak-chip.cold .fl{filter:grayscale(1);}
+.streak-dots{display:flex;gap:5px;align-items:center;}
+.streak-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);
+  transition:all .4s cubic-bezier(.68,-0.55,.27,1.55);}
+.streak-dot.lit{background:#ffd700;box-shadow:0 0 8px rgba(255,215,0,.7);}
+.streak-dot.today{background:#ff6b00;box-shadow:0 0 10px rgba(255,107,0,.8);
+  animation:streakPulse 1.2s ease-in-out infinite;}
+@keyframes streakPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+
+/* Streak celebration toast */
+.streak-toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120px);
+  z-index:400;background:linear-gradient(135deg,#ff6b00,#ffd700);
+  border-radius:50px;padding:14px 28px;font-family:'Fredoka One',cursive;font-size:20px;
+  color:#1a1a2e;box-shadow:0 8px 32px rgba(255,150,0,.6);
+  transition:transform .5s cubic-bezier(.68,-0.55,.27,1.55);}
+.streak-toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
@@ -496,6 +525,22 @@ body{overflow-y:auto;}
 
 <!-- SUBJECT PICKER -->
 <div class="subj-screen" id="subjScreen" style="display:none">
+  <!-- Streak bar -->
+  <div class="streak-bar">
+    <div class="streak-chip" id="streakChip">
+      <span class="fl">🔥</span>
+      <span id="streakCount">0 dagar</span>
+    </div>
+    <div class="streak-dots" id="streakDots">
+      <div class="streak-dot" id="sd0"></div>
+      <div class="streak-dot" id="sd1"></div>
+      <div class="streak-dot" id="sd2"></div>
+      <div class="streak-dot" id="sd3"></div>
+      <div class="streak-dot" id="sd4"></div>
+      <div class="streak-dot" id="sd5"></div>
+      <div class="streak-dot" id="sd6"></div>
+    </div>
+  </div>
   <div class="active-user-bar">
     <div class="active-user-chip" onclick="showUserScreen()">
       <span class="chip-ico" id="activeUserIco">🧒</span>
@@ -529,6 +574,12 @@ body{overflow-y:auto;}
       <div class="s-nm">SO</div>
       <div class="s-ds">Geo, historia,<br>religion &amp; samhälle</div>
       <div class="prog-mini"><div class="prog-mini-fill" id="pm-so" style="width:0%;background:#fb923c"></div></div>
+    </div>
+    <div class="subj-card no" id="sc-no" onclick="pickSubject('no')">
+      <div class="s-ico">🔬</div>
+      <div class="s-nm">NO</div>
+      <div class="s-ds">Kropp, djur,<br>rymd &amp; natur</div>
+      <div class="prog-mini"><div class="prog-mini-fill" id="pm-no" style="width:0%;background:#a3e635"></div></div>
     </div>
   </div>
 
@@ -574,6 +625,11 @@ body{overflow-y:auto;}
         <div class="prog-subj-track"><div class="prog-subj-fill" id="pf-so" style="width:0%;background:#fb923c"></div></div>
         <div class="prog-subj-num" id="pn-so">0/6</div>
       </div>
+      <div class="prog-subj">
+        <div class="prog-subj-name">🔬 NO</div>
+        <div class="prog-subj-track"><div class="prog-subj-fill" id="pf-no" style="width:0%;background:#a3e635"></div></div>
+        <div class="prog-subj-num" id="pn-no">0/6</div>
+      </div>
     </div>
   </div>
 </div>
@@ -583,7 +639,7 @@ body{overflow-y:auto;}
   <div class="alldone-stars" id="alldoneStars"></div>
   <div class="alldone-ico">🏆</div>
   <div class="alldone-title">DU ÄR EN MÄSTARE!</div>
-  <div class="alldone-sub">Du har klarat ALLT i Lärskogen!<br>Engelska · Matte · Klockan · SO 🌟</div>
+  <div class="alldone-sub">Du har klarat ALLT i Lärskogen!<br>Engelska · Matte · Klockan · SO · NO 🌟</div>
   <button class="alldone-btn" onclick="closeAlldone()">Spela igen! 🎮</button>
 </div>
 
@@ -1198,6 +1254,144 @@ const SO_BANKS = {
   ]}
 };
 
+
+// ── NO BANKS (Naturorienterande ämnen Åk 1-6) ────────────────────────────────
+const NO_BANKS = {
+  1:{badge:"🌱 NO Åk 1",dark:false,words:[
+    {en:"Vad äter en katt?",sv:"Kött och fisk",w:["Gräs","Frukter"]},
+    {en:"Vad gör växter med solljus?",sv:"Gör mat (fotosyntesen)",w:["Sover","Dricker"]},
+    {en:"Vad är vatten när det fryser?",sv:"Is",w:["Ånga","Sand"]},
+    {en:"Vad behöver en planta för att växa?",sv:"Vatten, jord och sol",w:["Snö och mörker","Sten och salt"]},
+    {en:"Vilket djur är störst?",sv:"Blåvalen",w:["Elefanten","Giraffen"]},
+    {en:"Vad är en fjärils larv?",sv:"Larv/caterpillar",w:["Puppa","Ägg"]},
+    {en:"Vad kallas regnets vatten som samlas i marken?",sv:"Grundvatten",w:["Havsvatten","Regnvatten"]},
+    {en:"Vad heter det när djur sover hela vintern?",sv:"Dvala",w:["Migration","Lek"]},
+    {en:"Vad är luften vi andas mest av?",sv:"Kväve",w:["Syre","Koldioxid"]},
+    {en:"Vad kallas ett djur som äter bara växter?",sv:"Växtätare",w:["Rovdjur","Allätare"]},
+    {en:"Vad är jordens närmaste stjärna?",sv:"Solen",w:["Polaris","Sirius"]},
+    {en:"Vad kallas en baby-katt?",sv:"Kattunge",w:["Valp","Killing"]},
+    {en:"Vad gör ett träd om hösten?",sv:"Tappar löven",w:["Blommar","Växer snabbt"]},
+    {en:"Vilket sinne använder vi för att känna lukter?",sv:"Luktsinnet (näsan)",w:["Synen","Hörseln"]},
+    {en:"Vad kallas djur som lever både i vatten och på land?",sv:"Groddjur",w:["Reptiler","Däggdjur"]},
+    {en:"Vad är regnbågens färger?",sv:"Röd, orange, gul, grön, blå, indigo, violett",w:["Röd, vit, blå","Grön, gul, svart"]},
+    {en:"Vilket djur kan flyga men är inte en fågel?",sv:"Fladdermus",w:["Pingvin","Struts"]},
+    {en:"Vad kallas det när vatten blir till ånga?",sv:"Avdunstning",w:["Kondensation","Frysning"]},
+    {en:"Vad äter en ko?",sv:"Gräs",w:["Fisk","Kött"]},
+    {en:"Vad heter månens rörelse runt jorden?",sv:"Omloppsbana",w:["Rotation","Gravitation"]}
+  ]},
+  2:{badge:"🐛 NO Åk 2",dark:false,words:[
+    {en:"Vad är fotosyntesen?",sv:"Växter gör mat av sol och koldioxid",w:["Djur andas ut syre","Vatten kokar"]},
+    {en:"Hur många ben har en insekt?",sv:"Sex ben",w:["Fyra ben","Åtta ben"]},
+    {en:"Vad kallas de tre tillstånden för vatten?",sv:"Fast, flytande, gas",w:["Kallt, varmt, hett","Litet, mellant, stort"]},
+    {en:"Vad är ett däggdjur?",sv:"Djur som ammar sina ungar",w:["Djur som lägger ägg","Djur som flyger"]},
+    {en:"Vad kallas när moln släpper vatten?",sv:"Nederbörd",w:["Kondensation","Avdunstning"]},
+    {en:"Vad heter kroppens längsta ben?",sv:"Lårbenet",w:["Skenbenet","Armbenet"]},
+    {en:"Vilken planet är närmast solen?",sv:"Merkurius",w:["Venus","Mars"]},
+    {en:"Vad äter en björn?",sv:"Allt (allätare)",w:["Bara kött","Bara bär"]},
+    {en:"Vad kallas djur med fjäll?",sv:"Fiskar och reptiler",w:["Fåglar","Däggdjur"]},
+    {en:"Vad är en magnets två ändar?",sv:"Nordpol och sydpol",w:["Plus och minus","Röd och blå"]},
+    {en:"Vad behöver ett frö för att gro?",sv:"Vatten och värme",w:["Kyla och mörker","Salt och sol"]},
+    {en:"Hur många planeter finns i solsystemet?",sv:"Åtta",w:["Nio","Sju"]},
+    {en:"Vad kallas det yttersta lagret på huden?",sv:"Överhuden (epidermis)",w:["Muskeln","Fettet"]},
+    {en:"Vad heter processens när en larv blir fjäril?",sv:"Metamorfos",w:["Dvala","Evolution"]},
+    {en:"Vad kallas ett djur utan ryggrad?",sv:"Ryggradslöst djur",w:["Däggdjur","Reptil"]},
+    {en:"Vad är gravitationens effekt på jorden?",sv:"Drar saker mot marken",w:["Får saker att flyga","Värmer upp luften"]},
+    {en:"Vad kallas det när havet stiger och sjunker?",sv:"Tidvatten",w:["Havsstorm","Erosion"]},
+    {en:"Vad är en virus?",sv:"Mycket litet smittsamt ämne",w:["En bakterie","En svamp"]},
+    {en:"Vilken gas andas vi in?",sv:"Syre",w:["Koldioxid","Kväve"]},
+    {en:"Vad kallas det hårda yttre skalet på insekter?",sv:"Exoskelett",w:["Skal","Pansaret"]}
+  ]},
+  3:{badge:"🦋 NO Åk 3",dark:false,words:[
+    {en:"Vad är ett ekosystem?",sv:"Levande och icke-levande saker som samverkar",w:["Bara djur i ett område","Bara växter i skogen"]},
+    {en:"Vad kallas jordens lager närmast ytan?",sv:"Jordskorpan",w:["Manteln","Kärnan"]},
+    {en:"Vad är en cell?",sv:"Kroppens minsta byggsten",w:["Ett organ","En gen"]},
+    {en:"Vad kallas det när ett ämne löser sig i vatten?",sv:"Löslighet",w:["Avdunstning","Blandning"]},
+    {en:"Hur lång tid tar det för jorden att gå runt solen?",sv:"365 dagar (ett år)",w:["24 timmar","28 dagar"]},
+    {en:"Vad är en regnskog?",sv:"Tät skog med mycket regn nära ekvatorn",w:["Skog med mycket snö","Skog utan djur"]},
+    {en:"Vad kallas djur som lever av döda djur?",sv:"Asätare",w:["Rovdjur","Växtätare"]},
+    {en:"Vad är en vulkans lava?",sv:"Smält sten från jordens inre",w:["Hett vatten","Brinnande sand"]},
+    {en:"Vad kallas det när blod pumpas runt i kroppen?",sv:"Blodcirkulationen",w:["Andningen","Matsmältningen"]},
+    {en:"Vad är en atom?",sv:"Den minsta delen av ett ämne",w:["En cell","En molekyl"]},
+    {en:"Vilken planet är störst i solsystemet?",sv:"Jupiter",w:["Saturnus","Neptunus"]},
+    {en:"Vad kallas det när ljus bryts i ett prisma?",sv:"Ljusbrytning",w:["Reflektion","Absorption"]},
+    {en:"Vad är en näringskedja?",sv:"Vem äter vem i naturen",w:["En matkedja på affären","Hur växter växer"]},
+    {en:"Vad kallas den process kroppen tar näring ur mat?",sv:"Matsmältning",w:["Blodcirkulation","Andning"]},
+    {en:"Hur många kammare har hjärtat?",sv:"Fyra",w:["Två","Sex"]},
+    {en:"Vad kallas en meteor som träffar jorden?",sv:"Meteorit",w:["Asteroid","Komet"]},
+    {en:"Vad är en fossil?",sv:"Rester av gamla djur/växter i sten",w:["Ett gammalt verktyg","En gammal sten"]},
+    {en:"Vad kallas det när växter tappar vatten som ånga?",sv:"Transpiration",w:["Fotosyntesen","Andning"]},
+    {en:"Vad är skillnaden mellan virus och bakterier?",sv:"Virus är mindre, lever inuti celler",w:["Bakterier är osynliga, virus syns","De är samma sak"]},
+    {en:"Vad kallas jordens magnetfält?",sv:"Magnetosfären",w:["Atmosfären","Gravitationsfältet"]}
+  ]},
+  4:{badge:"🦊 NO Åk 4",dark:false,words:[
+    {en:"Vad är DNA?",sv:"Ärftlig information i cellerna",w:["En typ av protein","En sorts vitamin"]},
+    {en:"Vad kallas ljusets hastighet?",sv:"Ca 300 000 km/s",w:["Ca 340 m/s","Ca 3000 km/h"]},
+    {en:"Vad är en kemisk reaktion?",sv:"Ämnen omvandlas till nya ämnen",w:["Ämnen blandas utan förändring","Ämnen värms upp"]},
+    {en:"Vad kallas det när is smälter direkt till gas?",sv:"Sublimering",w:["Avdunstning","Kondensation"]},
+    {en:"Vad är ett hormon?",sv:"Kemiskt budbärare i kroppen",w:["En muskel","En nerv"]},
+    {en:"Vad kallas jordens axels lutning?",sv:"Ca 23,5 grader",w:["45 grader","90 grader"]},
+    {en:"Vad orsakar årstiderna?",sv:"Jordens lutning mot solen",w:["Jordens avstånd från solen","Månens position"]},
+    {en:"Vad är ett ljusår?",sv:"Avståndet ljus färdas på ett år",w:["Ett år i rymden","100 miljoner km"]},
+    {en:"Vad kallas det när en art anpassar sig till miljön?",sv:"Adaption/anpassning",w:["Evolution","Mutation"]},
+    {en:"Vad är en reflektion?",sv:"Ljus studsar tillbaka från en yta",w:["Ljus bryts i vatten","Ljus absorberas"]},
+    {en:"Vad kallas det tunna lagret som skyddar cellerna?",sv:"Cellmembran",w:["Cellvägg","Kärnan"]},
+    {en:"Vad är en epidemi?",sv:"Sjukdom sprids till många i ett område",w:["Sjukdom hos ett djur","Sjukdom i blodomloppet"]},
+    {en:"Vad kallas stjärnor som exploderar?",sv:"Supernova",w:["Pulsar","Neutronsstjärna"]},
+    {en:"Vad är ett svart hål?",sv:"Område med så stark gravitation att ljus inte slipper ut",w:["En tom del av rymden","En döende planet"]},
+    {en:"Vad kallas den naturliga selektionen?",sv:"Anpassade individer överlever bättre",w:["Alla överlever lika","Starkast lever längst"]},
+    {en:"Vad är en gen?",sv:"Del av DNA som styr en egenskap",w:["En cell","Ett protein"]},
+    {en:"Vad kallas det när elektroner rör sig?",sv:"Elektrisk ström",w:["Magnetism","Radiation"]},
+    {en:"Vad är ett grundämne?",sv:"Ämne som inte kan delas i enklare ämnen",w:["En blandning av ämnen","En kemisk förening"]},
+    {en:"Vad kallas planeter utanför solsystemet?",sv:"Exoplaneter",w:["Asteroider","Kometer"]},
+    {en:"Vad är fotosyntes på kemisk nivå?",sv:"Koldioxid + vatten + ljus → socker + syre",w:["Syre + socker → koldioxid","Vatten + ljus → socker"]}
+  ]},
+  5:{badge:"🦅 NO Åk 5",dark:false,words:[
+    {en:"Vad är växthuseffekten?",sv:"Gaser håller kvar värme i atmosfären",w:["Solen blir varmare","Ozonlagret försvinner"]},
+    {en:"Vad kallas periodiska systemet?",sv:"Tabell över alla grundämnen",w:["Lista på kemiska reaktioner","Karta över atomer"]},
+    {en:"Vad är elektromagnetism?",sv:"Samband mellan elektricitet och magnetism",w:["Elektricitet i magneter","Ljus och ljud"]},
+    {en:"Vad kallas Newtons första lag?",sv:"Ett föremål i vila stannar om ingen kraft verkar",w:["Tyngre föremål faller snabbare","Energi kan skapas"]},
+    {en:"Vad är en isotop?",sv:"Atom med samma protontal men olika neutrontal",w:["En radioaktiv atom","En negativt laddad atom"]},
+    {en:"Vad är CRISPR?",sv:"Teknik för att redigera DNA",w:["En sorts virus","En cancerbehandling"]},
+    {en:"Vad kallas det minsta levande organismen?",sv:"Bakterie/encellig organism",w:["Virus","Prion"]},
+    {en:"Vad är en supraledare?",sv:"Material som leder ström utan motstånd",w:["Extra stark magnet","Isolator"]},
+    {en:"Vad kallas det när planeter bildas?",sv:"Planetbildning/ackretionsprocessen",w:["Kosmisk explosion","Gravitationskollaps"]},
+    {en:"Vad är kvantmekanik?",sv:"Fysik för mycket små partiklar",w:["Fysik för stora objekt","Atomers rörelse i gaser"]},
+    {en:"Vad kallas jordens tektoniska plattor?",sv:"Rörliga delar av jordskorpan",w:["Jordlager under havet","Bergskedjornas fundament"]},
+    {en:"Vad är ett antibiotikum?",sv:"Medicin som dödar bakterier",w:["Medicin mot virus","Vaccin"]},
+    {en:"Vad kallas fotoner?",sv:"Ljusets partiklar",w:["Elektroner","Neutroner"]},
+    {en:"Vad är en svart dvärgstjärna?",sv:"Slutstadiet av en liten stjärna (teoretisk)",w:["En ung stjärna","En röd jätte"]},
+    {en:"Vad kallas biologisk mångfald?",sv:"Variation av arter i ett område",w:["Antal djur i en zon","Planters höjdvariationer"]},
+    {en:"Vad är mitokondrien?",sv:"Cellens kraftverk — producerar energi",w:["Cellens kärna","Cellens membran"]},
+    {en:"Vad kallas det när arter samarbetar ömsesidigt?",sv:"Symbios",w:["Parasitism","Predation"]},
+    {en:"Vad är dark matter?",sv:"Osynlig massa som påverkar galaxers rörelse",w:["Svarta hål","Antimateria"]},
+    {en:"Vad kallas jordens magnetpoler?",sv:"Nord- och sydmagnetpolen",w:["Jordens rotationspunkter","Ekvatorn och polcirkeln"]},
+    {en:"Vad är en neuron?",sv:"Nervcell som skickar signaler",w:["En hjärtcell","En blodcell"]}
+  ]},
+  6:{badge:"⚡ NO Åk 6",dark:true,words:[
+    {en:"Vad är Einsteins relativitetsteori (kort)?",sv:"Tid och rum är relativa, E=mc²",w:["Ljuset är relativt","Gravitation är relativ massa"]},
+    {en:"Vad kallas Schrödingers katt?",sv:"Tankeexperiment om kvantmekanik och observation",w:["Experiment om kattgenetik","Teori om djursinnet"]},
+    {en:"Vad är CERN?",sv:"Europeisk forskningsorganisation för partikelfysik",w:["Rymdbyrå","Klimatforskningscenter"]},
+    {en:"Vad kallas det när ett ekosystem kollapsar?",sv:"Ekologisk kollaps",w:["Extinction burst","Ekosystemdrift"]},
+    {en:"Vad är epigenetik?",sv:"Hur miljö påverkar genernas uttryck",w:["Arv av DNA-mutationer","Genkloning"]},
+    {en:"Vad kallas Hubbles lag?",sv:"Universum expanderar, galaxer rör sig bort",w:["Stjärnor kretsar kring varandra","Ljus böjs av gravitation"]},
+    {en:"Vad är en katalysator?",sv:"Ämne som snabbar på reaktion utan att förbrukas",w:["Ämne som bromsar reaktioner","Produkt av en reaktion"]},
+    {en:"Vad kallas fermioner?",sv:"Partiklar som elektroner och kvarkar (materia)",w:["Ljusets partiklar","Antimateria"]},
+    {en:"Vad är CRISPR-Cas9?",sv:"Molekylär sax för att klippa i DNA",w:["Virus som reparerar DNA","Protein som kopierar DNA"]},
+    {en:"Vad kallas det biogeokemiska kretsloppet?",sv:"Ämnenas kretslopp i naturen (kol, kväve etc.)",w:["Vattnets avdunstning","Havets strömmar"]},
+    {en:"Vad är termodynamikens andra lag?",sv:"Entropi (oordning) ökar alltid i slutna system",w:["Energi kan skapas ur intet","Värme rör sig slumpmässigt"]},
+    {en:"Vad kallas det när ljus böjs av gravitation?",sv:"Gravitationslinseffekten",w:["Doppler-effekten","Refraktion"]},
+    {en:"Vad är en mRNA-spruta?",sv:"Instruerar celler att göra ett protein (vaccin)",w:["Inför virus i kroppen","Ger antikroppar direkt"]},
+    {en:"Vad kallas Paulis uteslutningsprincip?",sv:"Två fermioner kan inte ha samma kvanttillstånd",w:["Elektroner kretsar alltid","Atomer är stabila"]},
+    {en:"Vad är neuroplasticitet?",sv:"Hjärnans förmåga att omorganisera sig",w:["Nervernas hastighet","Hjärnans storlek"]},
+    {en:"Vad kallas det när ett element sönderfaller radioaktivt?",sv:"Radioaktivt sönderfall",w:["Kärnfusion","Fission"]},
+    {en:"Vad är kosmisk bakgrundsstrålning?",sv:"Eko av Big Bang — strålning som fyller universum",w:["Strålning från solen","Svarta håls strålning"]},
+    {en:"Vad kallas kvantentanglement?",sv:"Partiklar påverkar varandra oavsett avstånd",w:["Partiklar krockar","Partiklar delar laddning"]},
+    {en:"Vad är astrobiologi?",sv:"Studiet av liv i universum",w:["Studiet av stjärnors biologi","Rymdfärders biologi"]},
+    {en:"Vad kallas det när solen bränner bort sitt bränsle?",sv:"Solens döende — röd jätte sedan vit dvärg",w:["Supernova","Neutronsstjärna"]}
+  ]}
+};
+
+
 const GOAL=20;
 let lvl=1,score=0,locked=false,soundOn=true,usedIdx=[];
 let audioCtx=null;
@@ -1236,7 +1430,7 @@ function sndClick(){tone(600,'sine',.06,.14);}
 function sndFaint(){tone(300,'sawtooth',.08,.25);tone(200,'sawtooth',.15,.22,.07);tone(120,'sawtooth',.25,.18,.18);}
 
 const shuffle=a=>[...a].sort(()=>Math.random()-.5);
-const isDark=()=>(subject==='eng'?BANKS[lvl]:subject==='mat'?MATH_BANKS[lvl]:subject==='clk'?CLOCK_BANKS[lvl]:SO_BANKS[lvl]).dark;
+const isDark=()=>(subject==='eng'?BANKS[lvl]:subject==='mat'?MATH_BANKS[lvl]:subject==='clk'?CLOCK_BANKS[lvl]:subject==='so'?SO_BANKS[lvl]:NO_BANKS[lvl]).dark;
 
 // ── THEME ──
 function applyTheme(){
@@ -1447,14 +1641,18 @@ const SO_DESCS = [
   'Närmiljö &amp;<br>Sverige','Norden &amp;<br>världen','Historia &amp;<br>religion',
   'Geografi &amp;<br>samhälle','Världspolitik<br>&amp; miljö','Fördjupning<br>SO'
 ];
+const NO_DESCS = [
+  'Djur &amp;<br>växter','Kroppen &amp;<br>rymden','Ekosystem<br>&amp; kemi',
+  'Fysik &amp;<br>biologi','Avancerad<br>naturvetenskap','Fördjupad<br>NO'
+];
 
 function pickSubject(subj){
   sndClick();
   subject = subj;
-  const titles = {eng:'🇬🇧 Engelska', mat:'🔢 Matematik', clk:'🕐 Klockan', so:'🌍 SO'};
+  const titles = {eng:'🇬🇧 Engelska', mat:'🔢 Matematik', clk:'🕐 Klockan', so:'🌍 SO', no:'🔬 NO'};
   document.getElementById('lvlTitle').textContent = titles[subj];
   document.getElementById('lvlSub').textContent   = subj==='clk' ? 'Välj svårighetsgrad!' : 'Välj din årskurs!';
-  const descs = subj==='eng' ? ENG_DESCS : subj==='mat' ? MAT_DESCS : subj==='clk' ? CLK_DESCS : SO_DESCS;
+  const descs = subj==='eng' ? ENG_DESCS : subj==='mat' ? MAT_DESCS : subj==='clk' ? CLK_DESCS : subj==='so' ? SO_DESCS : NO_DESCS;
   for(let i=1;i<=6;i++) document.getElementById('ds'+i).innerHTML = descs[i-1];
   // Update level card icons/names for clock
   const icos = subj==='clk'
@@ -1472,7 +1670,7 @@ function pickSubject(subj){
   });
   // Last card dark style for clock level 6 and eng level 6
   const last = document.querySelector('#lvlCards .lc:last-child');
-  if(subj==='eng'||subj==='clk'||subj==='so'){
+  if(subj==='eng'||subj==='clk'||subj==='so'||subj==='no'){
     last.querySelector('.nm').style.color='#e879f9';
     last.querySelector('.ds').style.color='#d8b4fe';
   }
@@ -1503,7 +1701,7 @@ function startLevel(n){
   setHp('enemy',enemyHp,enemy.maxHp);
   setHp('player',playerHp,PLAYER.maxHp);
 
-  const bank = subject==='eng' ? BANKS[n] : subject==='mat' ? MATH_BANKS[n] : subject==='clk' ? CLOCK_BANKS[n] : SO_BANKS[n];
+  const bank = subject==='eng' ? BANKS[n] : subject==='mat' ? MATH_BANKS[n] : subject==='clk' ? CLOCK_BANKS[n] : subject==='so' ? SO_BANKS[n] : NO_BANKS[n];
   document.getElementById('lvBadge').textContent=bank.badge;
 
   // Show/hide word-card vs clock-card
@@ -1522,7 +1720,7 @@ function startLevel(n){
   document.querySelectorAll('.opt').forEach(o=>o.classList.toggle('dark-opt',isDark()));
   setMsg('Välj rätt svar för att attackera!');
   if(!isClk){
-    document.getElementById('wordHint').textContent = subject==='eng' ? 'Vad betyder detta ord på svenska?' : subject==='mat' ? 'Räkna ut!' : 'Välj rätt svar!';
+    document.getElementById('wordHint').textContent = subject==='eng' ? 'Vad betyder detta ord på svenska?' : subject==='mat' ? 'Räkna ut!' : subject==='no' ? 'Välj rätt svar!' : 'Välj rätt svar!';
     document.getElementById('engWord').className = (subject==='eng') ? 'eng-word' : 'eng-word math-q';
   }
   setTimeout(startBattle,60);
@@ -1537,8 +1735,8 @@ function nextQ(){
   setBubble(isDark()?'Använd Kraften! ⚡':'Välj rätt svar! 💥');
 
   let word;
-  if(subject==='eng' || subject==='so'){
-    const bank=(subject==='eng'?BANKS:SO_BANKS)[lvl].words;
+  if(subject==='eng' || subject==='so' || subject==='no'){
+    const bank=(subject==='eng'?BANKS:subject==='so'?SO_BANKS:NO_BANKS)[lvl].words;
     if(usedIdx.length>=bank.length) usedIdx=[];
     const avail=bank.map((_,i)=>i).filter(i=>!usedIdx.includes(i));
     const i=avail[Math.floor(Math.random()*avail.length)];
@@ -1647,7 +1845,7 @@ function showWin(lost=false){
     document.getElementById('winIco').textContent=isDark()?'⚡':'🎉';
     document.getElementById('winScr').querySelector('.win-ttl').textContent='SEGER!';
     document.getElementById('winSub').textContent=
-      lvl===6?`${subject==='clk'?'Nivå 6':'Åk 6'} klar! Du är en ${subject==='mat'?'matteguru':subject==='clk'?'klockexpert':subject==='so'?'SO-expert':'ordmästare'}! 👑`:
+      lvl===6?`${subject==='clk'?'Nivå 6':'Åk 6'} klar! Du är en ${subject==='mat'?'matteguru':subject==='clk'?'klockexpert':subject==='so'?'SO-expert':subject==='no'?'NO-expert':'ordmästare'}! 👑`:
       `${subject==='clk'?'Nivå':'Åk'} ${lvl} klar! Redo för nästa? 🚀`;
     // Save progress
     markLevelDone(subject, lvl);
@@ -1668,8 +1866,107 @@ function showWin(lost=false){
 }
 
 
+
+// ── STREAK SYSTEM ─────────────────────────────────────────────────────────────
+function streakKey(userId){ return 'larskogen_streak_'+(userId||'anon'); }
+
+function loadStreak(userId){
+  try{
+    const raw = localStorage.getItem(streakKey(userId));
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { count:0, lastDate:null, longestCount:0 };
+}
+function saveStreak(s, userId){
+  try{ localStorage.setItem(streakKey(userId), JSON.stringify(s)); }catch(e){}
+}
+
+function todayStr(){ return new Date().toISOString().slice(0,10); } // "2025-03-31"
+function yesterdayStr(){
+  const d = new Date(); d.setDate(d.getDate()-1);
+  return d.toISOString().slice(0,10);
+}
+
+function updateStreak(){
+  if(!activeUser) return;
+  const s = loadStreak(activeUser.id);
+  const today = todayStr();
+  let newStreak = false;
+
+  if(s.lastDate === today){
+    // Already played today — no change
+  } else if(s.lastDate === yesterdayStr()){
+    // Played yesterday — extend streak
+    s.count++;
+    s.lastDate = today;
+    if(s.count > (s.longestCount||0)) s.longestCount = s.count;
+    newStreak = true;
+  } else {
+    // Missed a day or first time — reset
+    const wasActive = s.count > 0;
+    s.count = 1;
+    s.lastDate = today;
+    newStreak = true;
+    if(wasActive && s.count < (s.longestCount||0)){
+      // Streak broken — could show message, for now just reset silently
+    }
+  }
+
+  saveStreak(s, activeUser.id);
+  renderStreakUI(s, newStreak);
+}
+
+function renderStreakUI(s, showToast){
+  const chip = document.getElementById('streakChip');
+  const countEl = document.getElementById('streakCount');
+  if(!chip || !countEl) return;
+
+  const today = todayStr();
+  const playedToday = s.lastDate === today;
+
+  if(s.count === 0){
+    chip.classList.add('cold');
+    countEl.textContent = 'Ingen streak';
+  } else {
+    chip.classList.remove('cold');
+    countEl.textContent = s.count + (s.count===1?' dag':' dagar') + (s.longestCount>s.count ? ' 🏅 Rekord: '+s.longestCount:'');
+  }
+
+  // Light up dots: last 7 days
+  for(let i=0;i<7;i++){
+    const dot = document.getElementById('sd'+i);
+    if(!dot) continue;
+    dot.classList.remove('lit','today');
+    // i=6 = today, i=5 = yesterday, etc.
+    if(i < s.count && s.count > 0){
+      if(i === Math.min(s.count-1,6) && playedToday){
+        dot.classList.add('today');
+      } else {
+        dot.classList.add('lit');
+      }
+    }
+  }
+
+  // Toast
+  if(showToast && s.count > 1){
+    const toast = document.getElementById('streakToast');
+    if(toast){
+      toast.textContent = s.count >= 7 ? '🔥🔥 '+s.count+' dagar i rad! Fantastiskt!' :
+                          s.count >= 3 ? '🔥 '+s.count+' dagar i rad! Kör på!' :
+                          '🔥 Dag 2! Du bygger en streak!';
+      toast.classList.add('show');
+      setTimeout(()=>toast.classList.remove('show'), 3500);
+    }
+  }
+}
+
+function loadStreakForUser(u){
+  const s = loadStreak(u ? u.id : null);
+  renderStreakUI(s, false);
+}
+
 // ── USER & PROGRESS SYSTEM ────────────────────────────────────────────────────
-const TOTAL_LEVELS = 24;
+const TOTAL_LEVELS = 30; // 5 subjects × 6
 const AVATARS = ['🧒','👦','👧','🧑','🦊','🐉','🦄','🐸','🐼','🦁','🐯','🦋','⭐','🚀','🎮'];
 
 let activeUser = null; // { id, name, avatar }
@@ -1693,7 +1990,7 @@ function saveProgress(p, userId){
   if(!id) return;
   try{ localStorage.setItem(progKey(id), JSON.stringify(p)); }catch(e){}
 }
-function emptyProgress(){ return {eng:[0,0,0,0,0,0],mat:[0,0,0,0,0,0],clk:[0,0,0,0,0,0],so:[0,0,0,0,0,0]}; }
+function emptyProgress(){ return {eng:[0,0,0,0,0,0],mat:[0,0,0,0,0,0],clk:[0,0,0,0,0,0],so:[0,0,0,0,0,0],no:[0,0,0,0,0,0]}; }
 
 function countDone(arr){ return (arr||[]).reduce((a,b)=>a+b,0); }
 function totalDoneFor(p){ return Object.values(p).flat().reduce((a,b)=>a+b,0); }
@@ -1763,6 +2060,7 @@ function selectUser(u){
   document.getElementById('activeUserName').textContent = u.name;
   document.getElementById('activeUserIco').textContent = u.avatar;
   updateProgressUI(loadProgress());
+  loadStreakForUser(u);
   sndClick();
   hideUserScreen();
 }
@@ -1789,13 +2087,14 @@ function markLevelDone(subj, lvlNum){
   p[subj][lvlNum-1] = 1;
   saveProgress(p);
   updateProgressUI(p);
+  updateStreak(); // register today as played
   if(totalDoneFor(p) >= TOTAL_LEVELS){
     setTimeout(showAlldone, 1800);
   }
 }
 
 function updateProgressUI(p){
-  const subjKeys = ['eng','mat','clk','so'];
+  const subjKeys = ['eng','mat','clk','so','no'];
   let totalDone = 0;
   subjKeys.forEach(s=>{
     const done = countDone(p[s]);
@@ -1823,7 +2122,7 @@ function showAlldone(){
   // Put the user's name in the celebration
   const nm = activeUser ? activeUser.name : 'Mästare';
   const adSub=document.getElementById('alldoneScr').querySelector('.alldone-sub'); if(adSub) adSub.innerHTML=
-    `<strong>${nm}</strong> har klarat ALLT i Lärskogen!<br>Engelska · Matte · Klockan · SO 🌟`;
+    `<strong>${nm}</strong> har klarat ALLT i Lärskogen!<br>Engelska · Matte · Klockan · SO · NO 🌟`;
   document.getElementById('alldoneScr').classList.add('show');
   [262,330,392,523,659,784,1047].forEach((f,i)=>tone(f,'sine',.4,.3,i*.12));
 }
@@ -1933,5 +2232,6 @@ async function refreshAllWords(){
   }
 }
 </script>
+<div class="streak-toast" id="streakToast">🔥 Ny streak!</div>
 </body>
 </html>
